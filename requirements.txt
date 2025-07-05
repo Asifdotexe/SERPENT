@@ -1,0 +1,2 @@
+streamlit~=1.46.1
+pyflowchart~=0.3.1
