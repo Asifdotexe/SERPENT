@@ -1,6 +1,8 @@
 """
-This is a simple function to rest the application
+This is a simple function to test the application with:
+Simple if-else statement
 """
+
 
 def check_number_sign(number: float) -> None:
     """This function uses if-else to check the arithmetic sign that number has.
