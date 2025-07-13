@@ -5,6 +5,7 @@
 ![Last Commit](https://img.shields.io/github/last-commit/Asifdotexe/SERPENT)
 ![Top Language](https://img.shields.io/github/languages/top/Asifdotexe/SERPENT)
 ![Languages Count](https://img.shields.io/github/languages/count/Asifdotexe/SERPENT)
+[![Deployed App](https://img.shields.io/badge/Deployed%20App-Live-green)](https://serpent.streamlit.app)
 
 ---
 
