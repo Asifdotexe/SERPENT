@@ -6,12 +6,16 @@ This module stays independent of any UI or web code.
 """
 
 import ast
-import matplotlib.pyplot as plt
+
 import matplotlib.patches as patches
+import matplotlib.pyplot as plt
 
 
 class PythonFlowchart(ast.NodeVisitor):
-    """Walks the AST and maps logic into flowchart nodes and edges."""
+    """
+    Core logic for AST ➜ Flowchart.
+    Now ignores docstrings so they do not appear as code steps.
+    """
 
     def __init__(self):
         self.nodes = []
@@ -21,8 +25,20 @@ class PythonFlowchart(ast.NodeVisitor):
         self.y_offset = 0
         self.pos = {}
 
+    def _strip_docstring(self, body):
+        """
+        Removes docstring Expr nodes if present.
+        """
+        if (
+            body
+            and isinstance(body[0], ast.Expr)
+            and isinstance(body[0].value, (ast.Str, ast.Constant))
+        ):
+            return body[1:]
+        return body
+
     def add_node(self, label, shape, x=0, y=None):
-        """Adds a flowchart shape with an automatic layout position."""
+        """Adds a flowchart shape with auto layout."""
         name = f"n{self.counter}"
         self.counter += 1
         if y is None:
@@ -39,19 +55,25 @@ class PythonFlowchart(ast.NodeVisitor):
         return name
 
     def visit_FunctionDef(self, node):
-        """Top-level function node becomes a Start/End shape."""
+        """Handle function with docstring stripping."""
         self.add_node(f"Function: {node.name}", "start_end")
+        node.body = self._strip_docstring(node.body)
+        self.generic_visit(node)
+        self.stack.pop()
+
+    def visit_ClassDef(self, node):
+        """Handle class definitions too, if you want."""
+        self.add_node(f"Class: {node.name}", "start_end")
+        node.body = self._strip_docstring(node.body)
         self.generic_visit(node)
         self.stack.pop()
 
     def visit_If(self, node):
-        """Handle IF condition with diverging
-        branches and a merge connector."""
+        """Standard IF branching logic with join."""
         cond_node = self.add_node(f"If: {ast.unparse(node.test)}", "decision")
         saved_stack = self.stack.copy()
         y_base = self.y_offset
 
-        # True branch - left
         self.y_offset = y_base
         self.stack = [cond_node]
         true_nodes = []
@@ -60,7 +82,6 @@ class PythonFlowchart(ast.NodeVisitor):
             true_nodes.append(n_true)
         last_true = true_nodes[-1] if true_nodes else cond_node
 
-        # False branch - right
         if node.orelse:
             self.y_offset = y_base
             self.stack = [cond_node]
@@ -72,7 +93,6 @@ class PythonFlowchart(ast.NodeVisitor):
         else:
             last_false = cond_node
 
-        # Join
         join_y = -self.y_offset
         join_node = f"n{self.counter}"
         self.counter += 1
@@ -90,40 +110,29 @@ class PythonFlowchart(ast.NodeVisitor):
         self.y_offset += 3
 
     def visit_For(self, node):
-        """Loop shape with an intentional back arrow."""
-        loop_node = self.add_node(
+        """Standard For loop with backward link."""
+        self.add_node(
             f"For: {ast.unparse(node.target)} in {ast.unparse(node.iter)}",
             "loop"
-            )
-        body_start = None
-        for n in node.body:
-            body_node = self.add_node(ast.unparse(n).strip(), "process")
-            if body_start is None:
-                body_start = body_node
-
-        # Add loop back
-        self.edges.append((self.stack[-1], loop_node))
+        )
+        self.generic_visit(node)
         self.stack.pop()
 
     def visit_While(self, node):
-        """While loop shape with back arrow."""
-        loop_node = self.add_node(f"While: {ast.unparse(node.test)}", "loop")
-        body_start = None
-        for n in node.body:
-            body_node = self.add_node(ast.unparse(n).strip(), "process")
-            if body_start is None:
-                body_start = body_node
-
-        self.edges.append((self.stack[-1], loop_node))
+        """Standard While loop with backward link."""
+        self.add_node(f"While: {ast.unparse(node.test)}", "loop")
+        self.generic_visit(node)
         self.stack.pop()
 
     def visit_Return(self, node):
-        """Return statement is just a process."""
+        """Return is a process step."""
         self.add_node(f"Return: {ast.unparse(node.value)}", "process")
         self.stack.pop()
 
     def visit_Expr(self, node):
-        """Generic statement."""
+        """Skip non-docstring expressions, treat as process."""
+        if isinstance(node.value, (ast.Str, ast.Constant)):
+            return  # Skip docstrings if any slipped through
         self.add_node(ast.unparse(node).strip(), "process")
         self.stack.pop()
 
