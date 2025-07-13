@@ -36,7 +36,8 @@ def main():
     """)
 
     # === Let user enter custom chart title ===
-    chart_title = st.text_input("Flowchart Title", value="Python Code Flowchart")
+    chart_title = st.text_input("Flowchart Title",
+                                value="Python Code Flowchart")
 
     # === Code input area ===
     code = st.text_area("Paste your Python code here:",
