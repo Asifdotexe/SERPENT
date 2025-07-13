@@ -14,6 +14,7 @@ def check_number_sign(number: float) -> None:
     else:
         print("The number is zero or negative.")
 
+
 # Test cases
 check_number_sign(5)
 check_number_sign(-3)
