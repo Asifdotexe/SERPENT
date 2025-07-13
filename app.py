@@ -103,7 +103,9 @@ def main():
                     st.pyplot(fig, use_container_width=True)
 
                 except Exception as e:
-                    st.error(f"❌ Error: Could not parse code.\n\n**Details:** {e}")
+                    st.error(
+                        f"❌ Error: Could not parse code.\n\n**Details:** {e}"
+                        )
 
     st.markdown("---")
     st.caption("💡 100% offline, no data leaves your machine.")
