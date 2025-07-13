@@ -1,4 +1,4 @@
-# flowchart_core.py
+# serpent_core.py
 
 """
 Core logic for parsing Python code with AST and drawing a flowchart.

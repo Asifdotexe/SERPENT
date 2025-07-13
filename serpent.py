@@ -10,7 +10,7 @@ import io
 import ast
 
 import streamlit as st
-from code.flowchart_core import PythonFlowchart, draw_flowchart
+from code.serpent_core import PythonFlowchart, draw_flowchart
 
 # Hide default Streamlit header and footer
 # This is optional, but makes the app look cleaner
