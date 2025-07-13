@@ -137,7 +137,7 @@ class PythonFlowchart(ast.NodeVisitor):
         self.stack.pop()
 
 
-def draw_flowchart(nodes, edges):
+def draw_flowchart(nodes, edges, title="Flowchart"):
     """Plots the flowchart from nodes + edges with Matplotlib."""
     fig, ax = plt.subplots(figsize=(8, 12))
     ax.axis("off")
@@ -227,5 +227,6 @@ def draw_flowchart(nodes, edges):
     ax.set_xlim(-8, 5)
     ax.set_ylim(min(y for _, _, _, _, y in nodes) - 2, 2)
 
+    plt.title(title)
     plt.tight_layout()
     return fig
