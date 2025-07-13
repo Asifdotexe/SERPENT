@@ -1,57 +1,73 @@
-# Code2Flow
+# SERPENT
 
-This tool provides a simple and efficient way to transform Python code into clear, interactive flowcharts. It's designed to help developers, educators, and interviewees visualize and present the logical structure of their code with ease.
+*Syntactic Extraction and Rendering of Python’s End-to-end Node Trees*
 
----
-
-## Features
-
-* **Code Parsing:** Converts Python scripts or functions into flowchart syntax using `pyflowchart`.
-* **Visual Rendering:** Generates interactive diagrams from the flowchart syntax using `flowchart.js`.
-* **Export Options:** Allows users to download flowcharts in various formats, including PNG, PDF, and standalone HTML.
-* **User-Friendly Interface:** Provides a straightforward and responsive web interface built with Streamlit or Gradio for code input, preview, and download.
-* **Reusable Core:** The backend logic for parsing and rendering is designed to be modular, enabling its use in other applications or development pipelines.
-* **Basic Syntax Highlighting:** Improves readability of the input code.
-* **Customizable Styling:** Offers options to adjust the flowchart's visual style, such as color themes.
+![Last Commit](https://img.shields.io/github/last-commit/Asifdotexe/SERPENT)
+![Top Language](https://img.shields.io/github/languages/top/Asifdotexe/SERPENT)
+![Languages Count](https://img.shields.io/github/languages/count/Asifdotexe/SERPENT)
 
 ---
 
-## Scope
+## Table of Contents
 
-### In Scope
-
-* **Input:** Accepts Python code via a `.py` file upload or direct text input.
-* **Output:** Generates a visual flowchart that can be exported as PNG, PDF, or HTML.
-* **Framework:** Developed as a single-user local web application (Streamlit or Gradio).
-* **Code Presentation:** Includes basic syntax highlighting for input code.
-* **Styling:** Provides options for minor style adjustments (e.g., color themes).
-
-### Out of Scope (for now)
-
-* **Multi-language Support:** Does not support languages beyond Python (e.g., C++, Java).
-* **Complex Python Constructs:** Advanced Python features like metaprogramming or decorators are not guaranteed to be fully represented unless handled by `pyflowchart`.
-* **Advanced Collaborative Editing:** Does not support real-time collaboration.
-* **Scalable Hosting:** Not designed for large-scale deployment or hosting.
+- [Overview](#overview)
+- [Getting Started](#getting-started)  
+  - [Prerequisites](#prerequisites)  
+  - [Installation](#installation)  
+  - [Usage](#usage)
+- [Results](#results)
+- [Conclusion](#conclusion)
+- [License](#license)
 
 ---
 
-## Use Cases
+## Overview
 
-### For Students & Educators
+SERPENT is an offline Python flowchart generator. It reads any valid Python code, parses its Abstract Syntax Tree (AST), and converts it into a clear, standard flowchart diagram. This makes it easier to explain, review, and share Python code structure, especially for people who prefer visual formats over raw code. It is designed to work fully offline, without sending any data to online tools or services.
 
-* **Learning Aid:** Visualize the step-by-step execution of code.
-* **Teaching Tool:** Effectively explain algorithms and control flow concepts.
+## Getting Started
 
-### For Developers & Teams
+### Prerequisites
+Python 3.8 or above installed on your local machine.
 
-* **Code Audit:** Quickly understand the structure of unfamiliar scripts.
-* **Documentation:** Create visual documentation for existing or legacy codebases.
+### Installation
 
-### For Job Interviews & Demos
+1. Clone the repository:  
+   ```bash
+   git clone https://github.com/yourusername/SERPENT.git
+   cd SERPENT
+   ```
 
-* **Candidate Demonstration:** Candidates can visually articulate their coding thought process.
-* **Recruiter Assessment:** Recruiters can gain better insights into a candidate's code comprehension.
+2. Create a virtual environment (recommended):
+    ```bash
+    python -m venv venv
+    source venv/bin/activate   # On Linux/macOS
+    venv\Scripts\activate      # On Windows
+    ```
 
-### For Technical Documentation
+3. Install dependencies:
+    ```bash
+    pip install -r requirements.txt
+    ```
 
-* **Embedded Diagrams:** Integrate flowcharts into wikis, READMEs, or client deliverables for enhanced clarity.
+4. Run the Streamlit app:
+    ```bash
+    streamlit run app.py
+    ```
+
+### Usage
+
+* Use the left input panel to paste your valid Python function(s).
+* Adjust the flowchart title as needed.
+* Click Generate Flowchart to see the visual output side by side.
+* Download the flowchart as a PNG for sharing or documentation.
+
+## Results
+The project successfully generates Python flowcharts offline. It handles conditional branches, loops, and nested logic, and produces standard flowchart shapes with clean arrows. The tool supports visual clarity, and users can export the diagrams for reports or presentations.
+
+## Conclusion
+SERPENT makes reading, explaining, and reviewing Python code easier for developers, students, educators, and teams. By visualising code structure without any online dependencies, it keeps source code secure while improving collaboration and understanding.
+
+## License
+
+This project is licensed under the MIT License — see the [LICENSE](./LICENSE) file for details.
