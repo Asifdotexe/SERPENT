@@ -1,44 +1,195 @@
-"""
-This streamlit application is a proof of concept code to test out tech stack
-"""
-
-import streamlit as st
-from pyflowchart import Flowchart
-
-st.set_page_config(page_title="Code to Flowchart", layout="wide")
-st.title("🗂️ Code to Flowchart Visualizer")
+import ast
+import matplotlib.pyplot as plt
+import matplotlib.patches as patches
 
 
-code_input = st.text_area(
-    "Paste your Python code here:",
-    height=300,
-    placeholder="""def greet(name):\n    if name:\n        
-    print(f'Hello, {name}')\n    else:\n        print('Hello, World!')""",
-)
+class PythonFlowchart(ast.NodeVisitor):
+    def __init__(self):
+        self.nodes = []
+        self.edges = []
+        self.counter = 0
+        self.stack = []
+        self.y_offset = 0
+        self.pos = {}
 
-if st.button("Generate Flowchart"):
-    if not code_input.strip():
-        st.warning("Please paste some Python code first!")
+    def add_node(self, label, shape, x=0):
+        name = f"n{self.counter}"
+        self.counter += 1
+        y = -self.y_offset
+        self.y_offset += 3
+
+        self.nodes.append((name, label, shape, x, y))
+        self.pos[name] = (x, y)
+
+        if self.stack:
+            self.edges.append((self.stack[-1], name))
+
+        self.stack.append(name)
+        return name
+
+    def visit_FunctionDef(self, node):
+        self.add_node(f"Function: {node.name}", "start_end")
+        self.generic_visit(node)
+        self.add_node("End", "start_end")
+        self.edges.append((self.stack[-2], self.stack[-1]))
+        self.stack.pop()
+        self.stack.pop()
+
+    def visit_If(self, node):
+        cond_node = self.add_node(f"If: {ast.unparse(node.test)}", "decision")
+        saved_stack = self.stack.copy()
+        base_y = self.y_offset
+
+        self.y_offset = base_y
+        self.stack = [cond_node]
+        true_nodes = []
+        for stmt in node.body:
+            true_node = self.add_node(ast.unparse(stmt).strip(), "process", x=-2)
+            true_nodes.append(true_node)
+        last_true = true_nodes[-1] if true_nodes else cond_node
+
+        if node.orelse:
+            self.y_offset = base_y
+            self.stack = [cond_node]
+            false_nodes = []
+            for stmt in node.orelse:
+                false_node = self.add_node(ast.unparse(stmt).strip(), "process", x=2)
+                false_nodes.append(false_node)
+            last_false = false_nodes[-1]
+        else:
+            last_false = cond_node
+
+        join_node = self.add_node("Join", "connector", x=0)
+        self.edges.append((last_true, join_node))
+        if last_false != cond_node:
+            self.edges.append((last_false, join_node))
+        else:
+            self.edges.append((cond_node, join_node))
+
+        self.stack = saved_stack
+        self.stack[-1] = join_node
+
+    def visit_For(self, node):
+        loop_node = self.add_node(f"For: {ast.unparse(node.target)} in {ast.unparse(node.iter)}", "loop")
+        loop_start = loop_node
+        self.generic_visit(node)
+        loop_end = self.add_node("Loop End", "connector")
+        self.edges.append((self.stack[-2], loop_end))
+        self.edges.append((loop_end, loop_start))
+        self.stack.pop()
+        self.stack.pop()
+
+    def visit_While(self, node):
+        loop_node = self.add_node(f"While: {ast.unparse(node.test)}", "loop")
+        loop_start = loop_node
+        self.generic_visit(node)
+        loop_end = self.add_node("Loop End", "connector")
+        self.edges.append((self.stack[-2], loop_end))
+        self.edges.append((loop_end, loop_start))
+        self.stack.pop()
+        self.stack.pop()
+
+    def visit_Return(self, node):
+        self.add_node(f"Return: {ast.unparse(node.value)}", "process")
+        self.stack.pop()
+
+    def visit_Expr(self, node):
+        self.add_node(ast.unparse(node).strip(), "process")
+        self.stack.pop()
+
+
+def draw_flowchart(nodes, edges):
+    fig, ax = plt.subplots(figsize=(8, 14))
+    ax.axis("off")
+
+    pos = {name: (x, y) for name, _, _, x, y in nodes}
+
+    for name, label, shape, x, y in nodes:
+        if shape == "start_end":
+            patch = patches.Ellipse((x, y), 3, 1.5, facecolor="lightgreen", edgecolor="black")
+        elif shape == "process":
+            patch = patches.Rectangle((x - 1.5, y - 0.75), 3, 1.5, facecolor="orange", edgecolor="black")
+        elif shape == "decision":
+            patch = patches.RegularPolygon((x, y), 4, radius=1.5, orientation=0.785, facecolor="lightblue", edgecolor="black")
+        elif shape == "loop":
+            patch = patches.Circle((x, y), radius=1.2, facecolor="pink", edgecolor="black")
+        elif shape == "connector":
+            patch = patches.Circle((x, y), radius=0.4, facecolor="grey", edgecolor="black")
+        else:
+            continue
+
+        ax.add_patch(patch)
+        ax.text(x, y, label, ha="center", va="center", fontsize=8, wrap=True)
+
+    def shape_offset(shape):
+        return {
+            "start_end": 0.8,
+            "process": 0.8,
+            "decision": 1.2,
+            "loop": 1.2,
+            "connector": 0.4
+        }.get(shape, 0.8)
+
+    for src, dst in edges:
+        x0, y0 = pos[src]
+        x1, y1 = pos[dst]
+
+        src_shape = [n for n in nodes if n[0] == src][0][2]
+        dst_shape = [n for n in nodes if n[0] == dst][0][2]
+        src_offset = shape_offset(src_shape)
+        dst_offset = shape_offset(dst_shape)
+
+        # L shaped for loop-back (upward)
+        if y1 > y0:
+            side_offset = -3  # how far left it should step
+            # 3 segments: down → left → up → right
+            mid1 = (x0 + side_offset, y0)
+            mid2 = (x0 + side_offset, y1)
+            # Draw segments
+            ax.plot([x0, mid1[0]], [y0 + src_offset, mid1[1] + src_offset], 'k-', lw=1.2)
+            ax.plot([mid1[0], mid2[0]], [mid1[1] + src_offset, mid2[1] - dst_offset], 'k-', lw=1.2)
+            ax.plot([mid2[0], x1], [mid2[1] - dst_offset, y1 - dst_offset], 'k-', lw=1.2)
+            # Draw arrowhead only at end
+            ax.annotate(
+                "",
+                xy=(x1, y1 - dst_offset),
+                xytext=(mid2[0], mid2[1] - dst_offset),
+                arrowprops=dict(arrowstyle="->", lw=1.5, color="black"),
+                annotation_clip=False
+            )
+        else:
+            ax.annotate(
+                "",
+                xy=(x1, y1 + dst_offset),
+                xytext=(x0, y0 - src_offset),
+                arrowprops=dict(arrowstyle="->", lw=1.5, color="black"),
+                annotation_clip=False
+            )
+
+    ax.set_xlim(-8, 5)
+    ax.set_ylim(min(y for _, _, _, _, y in nodes) - 2, 2)
+
+    plt.title("Python Flowchart with Proper Loop-back")
+    plt.tight_layout()
+    plt.savefig("flowchart_loops_box.png")
+    print("✅ Saved: flowchart_loops_box.png")
+    plt.show()
+
+
+if __name__ == "__main__":
+    code = """
+def sample(x):
+    print("Start")
+    if x > 5:
+        print("High")
     else:
-        try:
-            fc = Flowchart.from_code(code_input)
-            flowchart_js_code = fc.flowchart()
+        print("Low")
+    for i in range(3):
+        print(i)
+    return x
+"""
 
-            flowchart_html = f"""
-            <div id="canvas"></div>
-
-            <!-- Load flowchart.js -->
-            <script src="https://cdnjs.cloudflare.com/ajax/libs/flowchart/1.15.0/flowchart.min.js"></script>
-
-            <script>
-            document.addEventListener("DOMContentLoaded", function() {{
-                var diagram = flowchart.parse(`{flowchart_js_code}`);
-                diagram.drawSVG('canvas');
-            }});
-            </script>
-            """
-
-            st.components.v1.html(flowchart_html, height=500, scrolling=True)
-
-        except Exception as e:
-            st.error(f"Error generating flowchart: {e}")
+    tree = ast.parse(code)
+    flowchart = PythonFlowchart()
+    flowchart.visit(tree)
+    draw_flowchart(flowchart.nodes, flowchart.edges)
