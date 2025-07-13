@@ -37,7 +37,7 @@ def example(x):
 
 def main():
     st.set_page_config(page_title="Python ➜ Flowchart Generator",
-                       page_icon="🧩",  
+                       page_icon="🧩",
                        layout="wide")
 
     st.title("🧩 Python ➜ Flowchart Generator")
