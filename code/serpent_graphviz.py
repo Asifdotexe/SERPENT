@@ -1,5 +1,3 @@
-# serpent_graphviz.py
-
 """
 Core logic for parsing Python code with AST and drawing a flowchart.
 This module stays independent of any UI or web code.
@@ -31,32 +29,25 @@ class PythonFlowchartGV(ast.NodeVisitor):
 
     def visit_If(self, node):
         cond = self.new_node(f"If: {ast.unparse(node.test)}", "diamond")
-        saved_stack = self.stack.copy()
+        parent = self.stack[-1]  # Save current point before branching
 
-        # True branch
+        # === True branch ===
         self.stack = [cond]
         for stmt in node.body:
             self.visit(stmt)
-        end_true = self.stack[-1]
+        true_end = self.stack[-1]
 
-        # False branch
+        # === False branch ===
         if node.orelse:
             self.stack = [cond]
             for stmt in node.orelse:
                 self.visit(stmt)
-            end_false = self.stack[-1]
+            false_end = self.stack[-1]
+
+            # Reconnect last false and true ends to next node (if needed)
+            self.stack = [false_end]  # Keep false branch as latest point
         else:
-            end_false = cond
-
-        # Join node
-        join = f"n{self.counter}"
-        self.counter += 1
-        self.graph.node(join, label="Join", shape="circle")
-        self.graph.edge(end_true, join)
-        self.graph.edge(end_false, join)
-
-        self.stack = saved_stack
-        self.stack[-1] = join
+            self.stack = [true_end]  # Continue from true branch if no else
 
     def visit_For(self, node):
         self.new_node(f"For: {ast.unparse(node.target)} in {ast.unparse(node.iter)}", "circle")
@@ -77,6 +68,7 @@ class PythonFlowchartGV(ast.NodeVisitor):
     def visit_Return(self, node):
         self.new_node(f"Return: {ast.unparse(node.value)}", "box")
         self.stack.pop()
+
 
 def generate_graphviz_flowchart(code_str: str, title="Flowchart"):
     tree = ast.parse(code_str)
