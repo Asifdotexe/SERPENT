@@ -41,9 +41,20 @@ class PythonFlowchartGV(ast.NodeVisitor):
         :returns: The unique name (ID) of the newly created node.
         :rtype: str
         """
+
+        # Assign light pastel colors based on shape
+        color_map = {
+            "box": "lightyellow",
+            "diamond": "lightblue",
+            "oval": "lightgreen",
+            "circle": "thistle"
+        }
+
+        fillcolor = color_map.get(shape, "white")
+
         name = f"n{self.counter}"
         self.counter += 1
-        self.graph.node(name, label=label, shape=shape)
+        self.graph.node(name, label=label, shape=shape, style="filled", fillcolor=fillcolor)
 
         # Connect this new node from the last node on the stack,
         # establishing the sequential flow of the flowchart.
