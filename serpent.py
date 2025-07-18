@@ -34,12 +34,12 @@ def example(x):
 
 def main():
     st.set_page_config(
-        page_title="Python ➜ Flowchart Generator",
-        page_icon="🧩",
+        page_title="SERPENT",
+        page_icon="🐍",
         layout="wide"
     )
 
-    st.title("🧩 Python ➜ Flowchart Generator")
+    st.title("🐍 SERPENT: Python ➜ Flowchart Generator")
     st.caption("Turn your Python functions into clear, standard flowcharts in a few clicks. Fully offline & easy.")
 
     with st.expander("📌 How to use this tool", expanded=False):
