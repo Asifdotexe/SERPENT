@@ -17,7 +17,11 @@ class PythonFlowchart(ast.NodeVisitor):
     Now ignores docstrings so they do not appear as code steps.
     """
 
+
     def __init__(self):
+        """
+        Initialize the PythonFlowchart with empty node and edge lists, a unique node counter, a stack for traversal, a vertical offset for layout, and a position dictionary for node coordinates.
+        """
         self.nodes = []
         self.edges = []
         self.counter = 0
@@ -25,9 +29,16 @@ class PythonFlowchart(ast.NodeVisitor):
         self.y_offset = 0
         self.pos = {}
 
+
     def _strip_docstring(self, body):
         """
-        Removes docstring Expr nodes if present.
+        Remove a leading docstring expression from a list of AST nodes if present.
+        
+        Parameters:
+            body (list): List of AST nodes representing a code block.
+        
+        Returns:
+            list: The input list with the first node removed if it is a docstring expression; otherwise, the original list.
         """
         if (
             body
@@ -37,8 +48,20 @@ class PythonFlowchart(ast.NodeVisitor):
             return body[1:]
         return body
 
+
     def add_node(self, label, shape, x=0, y=None):
-        """Adds a flowchart shape with auto layout."""
+        """
+        Add a new flowchart node with the specified label and shape, automatically assigning a unique name and layout position.
+        
+        Parameters:
+        	label (str): The text label for the node.
+        	shape (str): The type of flowchart shape (e.g., 'process', 'decision').
+        	x (int, optional): The x-coordinate for the node. Defaults to 0.
+        	y (int, optional): The y-coordinate for the node. If not provided, an automatic vertical offset is used.
+        
+        Returns:
+        	name (str): The unique identifier assigned to the newly added node.
+        """
         name = f"n{self.counter}"
         self.counter += 1
         if y is None:
@@ -54,54 +77,69 @@ class PythonFlowchart(ast.NodeVisitor):
         self.stack.append(name)
         return name
 
+
     def visit_FunctionDef(self, node):
-        """Handle function with docstring stripping."""
+        """
+        Processes a function definition node, adding a start/end node for the function and visiting its body after removing any leading docstring.
+        """
         self.add_node(f"Function: {node.name}", "start_end")
         node.body = self._strip_docstring(node.body)
         self.generic_visit(node)
         self.stack.pop()
 
+
     def visit_ClassDef(self, node):
-        """Handle class definitions too, if you want."""
+        """
+        Processes a class definition node by adding a start/end node for the class, stripping any leading docstring, visiting its body, and updating the node stack.
+        """
         self.add_node(f"Class: {node.name}", "start_end")
         node.body = self._strip_docstring(node.body)
         self.generic_visit(node)
         self.stack.pop()
 
+
     def visit_If(self, node):
-        """Standard IF branching logic with join."""
+        """
+        Processes an `if` statement node, creating a decision node, separate branches for true and false bodies, and a join connector node to merge control flow.
+        
+        This method ensures correct flowchart structure for nested and sequential statements within both branches, maintaining layout consistency and accurate edge connections.
+        """
         cond_node = self.add_node(f"If: {ast.unparse(node.test)}", "decision")
         saved_stack = self.stack.copy()
         y_base = self.y_offset
 
+        # True branch
         self.y_offset = y_base
         self.stack = [cond_node]
-        true_nodes = []
-        for n in node.body:
-            n_true = self.add_node(ast.unparse(n).strip(), "process", x=-2)
-            true_nodes.append(n_true)
-        last_true = true_nodes[-1] if true_nodes else cond_node
+        true_last_node = cond_node
+        if node.body:
+            for stmt in node.body:
+                self.visit(stmt)
+            true_last_node = self.stack[-1]
 
+        # False branch (if exists)
+        self.y_offset = y_base
+        self.stack = [cond_node]
+        false_last_node = cond_node
         if node.orelse:
-            self.y_offset = y_base
-            self.stack = [cond_node]
-            false_nodes = []
-            for n in node.orelse:
-                n_false = self.add_node(ast.unparse(n).strip(), "process", x=2)
-                false_nodes.append(n_false)
-            last_false = false_nodes[-1]
-        else:
-            last_false = cond_node
+            for stmt in node.orelse:
+                self.visit(stmt)
+            false_last_node = self.stack[-1]
 
-        join_y = -self.y_offset
+        # Join node
+        join_y = -max(self.y_offset, y_base)
         join_node = f"n{self.counter}"
         self.counter += 1
         self.nodes.append((join_node, "Join", "connector", 0, join_y))
         self.pos[join_node] = (0, join_y)
 
-        self.edges.append((last_true, join_node))
-        if last_false != cond_node:
-            self.edges.append((last_false, join_node))
+        if true_last_node != cond_node:
+            self.edges.append((true_last_node, join_node))
+        else:
+            self.edges.append((cond_node, join_node))
+
+        if false_last_node != cond_node:
+            self.edges.append((false_last_node, join_node))
         else:
             self.edges.append((cond_node, join_node))
 
@@ -109,8 +147,13 @@ class PythonFlowchart(ast.NodeVisitor):
         self.stack[-1] = join_node
         self.y_offset += 3
 
+
     def visit_For(self, node):
-        """Standard For loop with backward link."""
+        """
+        Visit a for-loop AST node and add a corresponding loop node to the flowchart.
+        
+        Adds a loop node labeled with the loop target and iterable, traverses the loop body, and updates the flowchart structure accordingly.
+        """
         self.add_node(
             f"For: {ast.unparse(node.target)} in {ast.unparse(node.iter)}",
             "loop"
