@@ -80,17 +80,20 @@ def main():
                 st.warning("⚠️ Please paste some Python code first.")
             else:
                 try:
-                    tree = ast.parse(code)  # Validate syntax
+                    tree = ast.parse(code)
                     graph = generate_graphviz_flowchart(code, title=chart_title)
+
 
                     st.success("✅ Flowchart generated!")
                     st.graphviz_chart(graph.source)
 
+                    png_bytes = graph.pipe(format='png')
+
                     st.download_button(
-                        label="📥 Download DOT Source",
-                        data=graph.source,
-                        file_name="flowchart.dot",
-                        mime="text/plain"
+                        label="📥 Download as PNG",
+                        data=png_bytes,
+                        file_name="flowchart.png",
+                        mime="image/png"
                     )
 
                 except Exception as e:
