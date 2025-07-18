@@ -17,6 +17,7 @@ class PythonFlowchart(ast.NodeVisitor):
     Now ignores docstrings so they do not appear as code steps.
     """
 
+
     def __init__(self):
         self.nodes = []
         self.edges = []
@@ -24,6 +25,7 @@ class PythonFlowchart(ast.NodeVisitor):
         self.stack = []
         self.y_offset = 0
         self.pos = {}
+
 
     def _strip_docstring(self, body):
         """
@@ -36,6 +38,7 @@ class PythonFlowchart(ast.NodeVisitor):
         ):
             return body[1:]
         return body
+
 
     def add_node(self, label, shape, x=0, y=None):
         """Adds a flowchart shape with auto layout."""
@@ -54,12 +57,14 @@ class PythonFlowchart(ast.NodeVisitor):
         self.stack.append(name)
         return name
 
+
     def visit_FunctionDef(self, node):
         """Handle function with docstring stripping."""
         self.add_node(f"Function: {node.name}", "start_end")
         node.body = self._strip_docstring(node.body)
         self.generic_visit(node)
         self.stack.pop()
+
 
     def visit_ClassDef(self, node):
         """Handle class definitions too, if you want."""
@@ -68,46 +73,52 @@ class PythonFlowchart(ast.NodeVisitor):
         self.generic_visit(node)
         self.stack.pop()
 
+
     def visit_If(self, node):
-        """Standard IF branching logic with join."""
+        """Improved IF branching logic with proper child visiting and join node."""
         cond_node = self.add_node(f"If: {ast.unparse(node.test)}", "decision")
         saved_stack = self.stack.copy()
         y_base = self.y_offset
 
+        # True branch
         self.y_offset = y_base
         self.stack = [cond_node]
-        true_nodes = []
-        for n in node.body:
-            n_true = self.add_node(ast.unparse(n).strip(), "process", x=-2)
-            true_nodes.append(n_true)
-        last_true = true_nodes[-1] if true_nodes else cond_node
+        true_last_node = cond_node
+        if node.body:
+            for stmt in node.body:
+                self.visit(stmt)
+            true_last_node = self.stack[-1]
 
+        # False branch (if exists)
+        self.y_offset = y_base
+        self.stack = [cond_node]
+        false_last_node = cond_node
         if node.orelse:
-            self.y_offset = y_base
-            self.stack = [cond_node]
-            false_nodes = []
-            for n in node.orelse:
-                n_false = self.add_node(ast.unparse(n).strip(), "process", x=2)
-                false_nodes.append(n_false)
-            last_false = false_nodes[-1]
-        else:
-            last_false = cond_node
+            for stmt in node.orelse:
+                self.visit(stmt)
+            false_last_node = self.stack[-1]
 
-        join_y = -self.y_offset
+        # Join node
+        join_y = -max(self.y_offset, y_base)
         join_node = f"n{self.counter}"
         self.counter += 1
         self.nodes.append((join_node, "Join", "connector", 0, join_y))
         self.pos[join_node] = (0, join_y)
 
-        self.edges.append((last_true, join_node))
-        if last_false != cond_node:
-            self.edges.append((last_false, join_node))
+        if true_last_node != cond_node:
+            self.edges.append((true_last_node, join_node))
+        else:
+            self.edges.append((cond_node, join_node))
+
+        if false_last_node != cond_node:
+            self.edges.append((false_last_node, join_node))
         else:
             self.edges.append((cond_node, join_node))
 
         self.stack = saved_stack
         self.stack[-1] = join_node
         self.y_offset += 3
+
 
     def visit_For(self, node):
         """Standard For loop with backward link."""
