@@ -19,6 +19,9 @@ class PythonFlowchart(ast.NodeVisitor):
 
 
     def __init__(self):
+        """
+        Initialize the PythonFlowchart with empty node and edge lists, a unique node counter, a stack for traversal, a vertical offset for layout, and a position dictionary for node coordinates.
+        """
         self.nodes = []
         self.edges = []
         self.counter = 0
@@ -29,7 +32,13 @@ class PythonFlowchart(ast.NodeVisitor):
 
     def _strip_docstring(self, body):
         """
-        Removes docstring Expr nodes if present.
+        Remove a leading docstring expression from a list of AST nodes if present.
+        
+        Parameters:
+            body (list): List of AST nodes representing a code block.
+        
+        Returns:
+            list: The input list with the first node removed if it is a docstring expression; otherwise, the original list.
         """
         if (
             body
@@ -41,7 +50,18 @@ class PythonFlowchart(ast.NodeVisitor):
 
 
     def add_node(self, label, shape, x=0, y=None):
-        """Adds a flowchart shape with auto layout."""
+        """
+        Add a new flowchart node with the specified label and shape, automatically assigning a unique name and layout position.
+        
+        Parameters:
+        	label (str): The text label for the node.
+        	shape (str): The type of flowchart shape (e.g., 'process', 'decision').
+        	x (int, optional): The x-coordinate for the node. Defaults to 0.
+        	y (int, optional): The y-coordinate for the node. If not provided, an automatic vertical offset is used.
+        
+        Returns:
+        	name (str): The unique identifier assigned to the newly added node.
+        """
         name = f"n{self.counter}"
         self.counter += 1
         if y is None:
@@ -59,7 +79,9 @@ class PythonFlowchart(ast.NodeVisitor):
 
 
     def visit_FunctionDef(self, node):
-        """Handle function with docstring stripping."""
+        """
+        Processes a function definition node, adding a start/end node for the function and visiting its body after removing any leading docstring.
+        """
         self.add_node(f"Function: {node.name}", "start_end")
         node.body = self._strip_docstring(node.body)
         self.generic_visit(node)
@@ -67,7 +89,9 @@ class PythonFlowchart(ast.NodeVisitor):
 
 
     def visit_ClassDef(self, node):
-        """Handle class definitions too, if you want."""
+        """
+        Processes a class definition node by adding a start/end node for the class, stripping any leading docstring, visiting its body, and updating the node stack.
+        """
         self.add_node(f"Class: {node.name}", "start_end")
         node.body = self._strip_docstring(node.body)
         self.generic_visit(node)
@@ -75,7 +99,11 @@ class PythonFlowchart(ast.NodeVisitor):
 
 
     def visit_If(self, node):
-        """Improved IF branching logic with proper child visiting and join node."""
+        """
+        Processes an `if` statement node, creating a decision node, separate branches for true and false bodies, and a join connector node to merge control flow.
+        
+        This method ensures correct flowchart structure for nested and sequential statements within both branches, maintaining layout consistency and accurate edge connections.
+        """
         cond_node = self.add_node(f"If: {ast.unparse(node.test)}", "decision")
         saved_stack = self.stack.copy()
         y_base = self.y_offset
@@ -121,7 +149,11 @@ class PythonFlowchart(ast.NodeVisitor):
 
 
     def visit_For(self, node):
-        """Standard For loop with backward link."""
+        """
+        Visit a for-loop AST node and add a corresponding loop node to the flowchart.
+        
+        Adds a loop node labeled with the loop target and iterable, traverses the loop body, and updates the flowchart structure accordingly.
+        """
         self.add_node(
             f"For: {ast.unparse(node.target)} in {ast.unparse(node.iter)}",
             "loop"

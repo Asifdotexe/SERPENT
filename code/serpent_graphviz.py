@@ -22,7 +22,7 @@ class PythonFlowchartGV(ast.NodeVisitor):
 
     def __init__(self):
         """
-        Initializes the Flowchart Graphviz Visitor.
+        Initialize the flowchart visitor with a new Graphviz directed graph, a unique node counter, and an empty stack for tracking control flow.
         """
         self.graph = Digraph(format='png')
         self.counter = 0
@@ -30,16 +30,14 @@ class PythonFlowchartGV(ast.NodeVisitor):
 
     def new_node(self, label: str, shape: str = "box") -> str:
         """
-        Creates a new node in the Graphviz graph and handles its connection
-        to the previous node in the current flow path based on the internal stack.
-
-        :param label: The text label to display inside the node.
-        :type label: str
-        :param shape: The shape of the node (e.g., "box", "diamond", "oval").
-                      Defaults to "box".
-        :type shape: str
-        :returns: The unique name (ID) of the newly created node.
-        :rtype: str
+        Create a new node in the Graphviz flowchart with a specified label and shape, connect it to the previous node in the current flow path, and return its unique ID.
+        
+        Parameters:
+            label (str): The text to display inside the node.
+            shape (str): The shape of the node (e.g., "box", "diamond", "oval", "circle"). Defaults to "box".
+        
+        Returns:
+            str: The unique identifier of the newly created node.
         """
 
         # Assign light pastel colors based on shape
@@ -67,15 +65,9 @@ class PythonFlowchartGV(ast.NodeVisitor):
 
     def visit_FunctionDef(self, node: ast.FunctionDef):
         """
-        Visits an `ast.FunctionDef` node (function definition).
-
-        This method creates an oval-shaped node for the function's entry point,
-        then recursively visits its body. After the body is processed, it pops
-        the last node of the function's flow from the stack, signaling a return
-        to the parent scope's flow.
-
-        :param node: The `ast.FunctionDef` node being visited.
-        :type node: ast.FunctionDef
+        Handles a function definition node by creating an oval node for the function entry and visiting its body.
+        
+        Creates a flowchart node representing the function, traverses its statements, and updates the flow stack to resume the parent scope after processing.
         """
         self.new_node(f"Function: {node.name}", "oval")
 
@@ -88,15 +80,9 @@ class PythonFlowchartGV(ast.NodeVisitor):
 
     def visit_If(self, node: ast.If):
         """
-        Visits an `ast.If` node (if/elif/else conditional statement).
-        This method handles the branching logic of 'if' statements by:
-        1. Creating a diamond-shaped decision node.
-        2. Temporarily resetting the stack for the 'true' and 'false' branches
-           to ensure their paths originate correctly from the decision node.
-        3. Capturing the end nodes of each branch.
-        4. Setting the stack to the appropriate branch end to implicitly merge the flow.
-
-        :param node: The `ast.If` node being visited.
+        Visit an `ast.If` node and add a decision node with branching for the if/else structure in the flowchart.
+        
+        Creates a diamond-shaped node for the condition, processes both true and false branches so their flows originate from the decision node, and merges the flow at the end of the branches to maintain correct control flow in the graph.
         """
         cond = self.new_node(f"If: {ast.unparse(node.test)}", "diamond")
 
@@ -142,11 +128,10 @@ class PythonFlowchartGV(ast.NodeVisitor):
 
     def visit_For(self, node: ast.For):
         """
-        Visits an `ast.For` node (for loop).
-        This method creates a circular node for the loop, visits its body, and then
-        pops the last node of the loop body from the stack to resume the parent flow.
-
-        :param node: The `ast.For` node being visited.
+        Handles a for loop node by adding a circular node for the loop and connecting its body to the flowchart.
+        
+        Parameters:
+            node (ast.For): The AST node representing the for loop.
         """
         self.new_node(f"For: {ast.unparse(node.target)} in {ast.unparse(node.iter)}", "circle")
 
@@ -159,13 +144,9 @@ class PythonFlowchartGV(ast.NodeVisitor):
 
     def visit_While(self, node: ast.While):
         """
-        Visits an `ast.While` node (while loop).
-
-        Similar to `visit_For`, this creates a circular node for the loop,
-        visits its body, and pops the last node of the loop body from the stack.
-
-        :param node: The `ast.While` node being visited.
-        :type node: ast.While
+        Visit a while loop node and add its control flow to the graph.
+        
+        Creates a circular node labeled with the loop condition, processes the loop body, and updates the flowchart to reflect the loop's structure.
         """
         self.new_node(f"While: {ast.unparse(node.test)}", "circle")
 
@@ -177,12 +158,7 @@ class PythonFlowchartGV(ast.NodeVisitor):
 
     def visit_Expr(self, node: ast.Expr):
         """
-        Visits an `ast.Expr` node (expression statement).
-        This method creates a box-shaped node for the expression. It specifically
-        filters out standalone string literals, which are typically docstrings
-        and not intended to be flowchart nodes.
-
-        :param node: The `ast.Expr` node being visited.
+        Visit an expression statement node and add it as a box-shaped node to the flowchart, excluding standalone string literals such as docstrings.
         """
         # Ignore standalone string literals (often docstrings) as flowchart nodes.
         if isinstance(node.value, (ast.Str, ast.Constant)) and isinstance(node.value.value, str):
@@ -196,10 +172,7 @@ class PythonFlowchartGV(ast.NodeVisitor):
 
     def visit_Return(self, node: ast.Return):
         """
-        Visits an `ast.Return` node (return statement).
-        This method creates a box-shaped node for the return statement.
-
-        :param node: The `ast.Return` node being visited.
+        Handle a return statement by adding a box-shaped node labeled with the return expression and updating the flow to reflect termination of the current path.
         """
         self.new_node(f"Return: {ast.unparse(node.value)}", "box")
 
@@ -210,14 +183,14 @@ class PythonFlowchartGV(ast.NodeVisitor):
 
 def generate_graphviz_flowchart(code_str: str, title: str = "Flowchart") -> Digraph:
     """
-    Parses Python source code and generates a Graphviz Digraph object
-    representing its control flow as a flowchart.
-
-    :param code_str: The Python source code as a string.
-    :param title: The title to display at the top of the flowchart.
-                  Defaults to "Flowchart".
-    :returns: The configured `graphviz.Digraph` object, ready for rendering
-              (e.g., to PNG, SVG).
+    Parse Python source code and generate a Graphviz Digraph visualizing its control flow as a flowchart.
+    
+    Parameters:
+        code_str (str): Python source code to visualize.
+        title (str): Title displayed at the top of the flowchart.
+    
+    Returns:
+        Digraph: A Graphviz Digraph object representing the code's control flow.
     """
     tree = ast.parse(code_str)
     fc = PythonFlowchartGV()

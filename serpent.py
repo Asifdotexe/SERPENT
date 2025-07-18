@@ -33,6 +33,11 @@ def example(x):
 '''
 
 def main():
+    """
+    Launches the Streamlit web application for converting Python functions into flowcharts using Graphviz.
+    
+    Provides a user interface for inputting Python code, specifying a flowchart title, and generating a visual flowchart representation. Handles user guidance, error checking, and allows downloading the generated flowchart as a PNG image.
+    """
     st.set_page_config(
         page_title="SERPENT",
         page_icon="🐍",
