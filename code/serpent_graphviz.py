@@ -1,5 +1,10 @@
 # serpent_graphviz.py
 
+"""
+Core logic for parsing Python code with AST and drawing a flowchart.
+This module stays independent of any UI or web code.
+"""
+
 import ast
 from graphviz import Digraph
 

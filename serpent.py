@@ -44,11 +44,11 @@ def main():
 
     with st.expander("📌 How to use this tool", expanded=False):
         st.markdown("""
-        ✅ Paste valid Python **function(s)** only.  
-        ✅ Indentation must follow Python syntax.  
-        ✅ Comments & docstrings are ignored automatically.  
-        ✅ Add a custom title if you want.  
-        ✅ Click **Generate** to see your flowchart side-by-side.  
+        ✅ Paste valid Python **function(s)** only.
+        ✅ Indentation must follow Python syntax.
+        ✅ Comments & docstrings are ignored automatically.
+        ✅ Add a custom title if you want.
+        ✅ Click **Generate** to see your flowchart side-by-side.
         """)
         st.code(placeholder_code, language="python")
 
