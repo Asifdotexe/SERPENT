@@ -1,0 +1,27 @@
+digraph {
+	n0 [label="Function: check_age" shape=oval]
+	n1 [label="If: age < 13" shape=diamond]
+	n0 -> n1
+	n2 [label="print('Child')" shape=box]
+	n1 -> n2
+	n3 [label="If: age < 18" shape=diamond]
+	n1 -> n3
+	n4 [label="print('Teenager')" shape=box]
+	n3 -> n4
+	n5 [label="If: age < 60" shape=diamond]
+	n3 -> n5
+	n6 [label="print('Adult')" shape=box]
+	n5 -> n6
+	n7 [label="print('Senior')" shape=box]
+	n5 -> n7
+	n8 [label=Join shape=circle]
+	n5 -> n8
+	n5 -> n8
+	n9 [label=Join shape=circle]
+	n3 -> n9
+	n8 -> n9
+	n10 [label=Join shape=circle]
+	n1 -> n10
+	n9 -> n10
+	fontsize=20 label="Flowchart w/ Graphviz" labelloc=t
+}
