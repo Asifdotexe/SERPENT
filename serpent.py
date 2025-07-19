@@ -7,6 +7,8 @@ Purpose:
 """
 
 import ast
+import shutil
+
 import streamlit as st
 
 from code.serpent_graphviz import generate_graphviz_flowchart
@@ -35,8 +37,10 @@ def example(x):
 def main():
     """
     Launches the Streamlit web application for converting Python functions into flowcharts using Graphviz.
-    
-    Provides a user interface for inputting Python code, specifying a flowchart title, and generating a visual flowchart representation. Handles user guidance, error checking, and allows downloading the generated flowchart as a PNG image.
+
+    Provides a user interface for inputting Python code, specifying a flowchart title,
+    and generating a visual flowchart representation. Handles user guidance, error checking,
+    and allows downloading the generated flowchart as a PNG image.
     """
     st.set_page_config(
         page_title="SERPENT",
@@ -49,10 +53,10 @@ def main():
 
     with st.expander("📌 How to use this tool", expanded=False):
         st.markdown("""
-        ✅ Paste valid Python **function(s)** only.
-        ✅ Indentation must follow Python syntax.
-        ✅ Comments & docstrings are ignored automatically.
-        ✅ Add a custom title if you want.
+        ✅ Paste valid Python **function(s)** only. \n
+        ✅ Indentation must follow Python syntax. \n
+        ✅ Comments & docstrings are ignored automatically. \n
+        ✅ Add a custom title if you want. \n
         ✅ Click **Generate** to see your flowchart side-by-side.
         """)
         st.code(placeholder_code, language="python")
@@ -88,18 +92,29 @@ def main():
                     tree = ast.parse(code)
                     graph = generate_graphviz_flowchart(code, title=chart_title)
 
-
                     st.success("✅ Flowchart generated!")
                     st.graphviz_chart(graph.source)
 
-                    png_bytes = graph.pipe(format='png')
+                    if shutil.which("dot"):
+                        # Graphviz is available → allow PNG download
+                        png_bytes = graph.pipe(format='png')
+                        st.download_button(
+                            label="📥 Download as PNG",
+                            data=png_bytes,
+                            file_name="flowchart.png",
+                            mime="image/png"
+                        )
+                    else:
+                        # Fallback mode
+                        st.warning("⚠️ PNG export not available in this environment.")
+                        st.download_button(
+                            label="⬇️ Download DOT source",
+                            data=graph.source,
+                            file_name="flowchart.dot",
+                            mime="text/vnd.graphviz"
+                        )
+                        st.caption("💡 Tip: Open `.dot` file in VSCode or convert it online to PNG [e.g. here](https://dreampuf.github.io/GraphvizOnline/).")
 
-                    st.download_button(
-                        label="📥 Download as PNG",
-                        data=png_bytes,
-                        file_name="flowchart.png",
-                        mime="image/png"
-                    )
 
                 except Exception as e:
                     st.error(f"❌ Error: Could not parse code.\n\n**Details:** {e}")
