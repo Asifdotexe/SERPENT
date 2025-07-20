@@ -7,7 +7,7 @@ name = "SERPENT"
 version = "0.1.0"
 description = "A Python function to flowchart generator with a Streamlit GUI."
 readme = "README.md"
-requires-python = ">=3.9"
+requires-python = ">=3.10"
 license = { file = "LICENSE" }
 keywords = ["flowchart", "code visualization", "streamlit", "graphviz", "python",
             "flowchart generator", "code to flowchart", "serpent"]
