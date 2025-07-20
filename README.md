@@ -12,7 +12,7 @@
 ## Table of Contents
 
 - [Overview](#overview)
-- [Feature and Example](#features--examples)
+- [Features and Example](#features--examples)
 - [Getting Started](#getting-started)
   - [Prerequisites](#prerequisites)
   - [Installation](#installation)
