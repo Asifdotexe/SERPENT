@@ -12,11 +12,20 @@ import streamlit as st
 
 from serpent_scripts.serpent_graphviz import generate_graphviz_flowchart
 
-# Hide default Streamlit header and footer
+# --- Page Configuration ---
+st.set_page_config(
+    page_title="SERPENT",
+    page_icon="🐍",
+    layout="wide",
+    initial_sidebar_state="collapsed"
+    )
+
+# -- Custom CSS to hide default Streamlit header and footer --
 hide_default_format = """
        <style>
        #MainMenu {visibility: hidden; }
        footer {visibility: hidden;}
+       .stButton>button {width: 100%;}
        </style>
        """
 st.markdown(hide_default_format, unsafe_allow_html=True)
@@ -41,12 +50,6 @@ def main() -> None:
     and generating a visual flowchart representation. Handles user guidance, error checking,
     and allows downloading the generated flowchart as a PNG image.
     """
-    st.set_page_config(
-        page_title="SERPENT",
-        page_icon="🐍",
-        layout="wide"
-    )
-
     st.title("🐍 SERPENT: Python ➜ Flowchart Generator")
     st.caption("Turn your Python functions into clear, standard flowcharts in a few clicks. Fully offline & easy.")
 
