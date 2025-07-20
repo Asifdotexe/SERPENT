@@ -7,6 +7,8 @@
 ![Languages Count](https://img.shields.io/github/languages/count/Asifdotexe/SERPENT)
 [![Deployed App](https://img.shields.io/badge/Deployed%20App-Live-green)](https://serpent.streamlit.app)
 
+![SERPENT Banner](examples/serpent_banner_white_bg.png)
+
 ---
 
 ## Table of Contents
