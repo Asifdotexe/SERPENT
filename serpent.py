@@ -68,54 +68,68 @@ def main() -> None:
         code = st.text_area(
             "Your Python Code",
             height=350,
-            placeholder="def my_function(): ..."
+            placeholder="def my_function(): ...",
+            help="Paste one or more valid Python functions here. The script will ignore comments and docstrings."
         )
 
         chart_title = st.text_input(
             "🏷️ Flowchart Title",
-            value="Python Code Flowchart"
+            value="Python Code Flowchart",
+            help="Enter a title to be displayed at the top of your flowchart."
         )
 
-        generate = st.button("✨ Generate Flowchart")
+        generate = st.button(
+            "✨ Generate Flowchart",
+            help="Click here to generate the flowchart from your code."
+        )
 
     with output_col:
         st.subheader("🗂️ Output")
 
-        if generate:
-            if not code.strip():
-                st.warning("⚠️ Please paste some Python code first.")
+        if not generate:
+            st.info("Your generated flowchart will appear here.")
+            return
+
+        if not code.strip():
+            st.warning("⚠️ Please paste some Python code first.")
+            return
+
+        try:
+            # --- Code Validation and Flowchart Generation ---
+            ast.parse(code)
+            graph = generate_graphviz_flowchart(code, title=chart_title)
+
+            st.success("✅ Flowchart generated!")
+            st.graphviz_chart(graph.source)
+
+            # --- Download Buttons ---
+            if shutil.which("dot"):
+                # Graphviz is available → allow PNG download
+                png_bytes = graph.pipe(format='png')
+                st.download_button(
+                    label="📥 Download as PNG",
+                    data=png_bytes,
+                    file_name="flowchart.png",
+                    mime="image/png",
+                    help="Download the flowchart as a PNG image."
+                )
             else:
-                try:
-                    # Validate Python syntax (actual parsing done in generate_graphviz_flowchart)
-                    ast.parse(code)
-                    graph = generate_graphviz_flowchart(code, title=chart_title)
+                # Fallback mode
+                st.warning("⚠️ PNG export not available in this environment.")
+                st.download_button(
+                    label="⬇️ Download DOT source",
+                    data=graph.source,
+                    file_name="flowchart.dot",
+                    mime="text/vnd.graphviz",
+                    help="Download the Graphviz source file (.dot) to render it locally."
+                )
+                st.caption("""💡 Tip: Open `.dot` file in VSCode or convert it online to PNG
+                            [e.g. here](https://dreampuf.github.io/GraphvizOnline/).""")
 
-                    st.success("✅ Flowchart generated!")
-                    st.graphviz_chart(graph.source)
-
-                    if shutil.which("dot"):
-                        # Graphviz is available → allow PNG download
-                        png_bytes = graph.pipe(format='png')
-                        st.download_button(
-                            label="📥 Download as PNG",
-                            data=png_bytes,
-                            file_name="flowchart.png",
-                            mime="image/png"
-                        )
-                    else:
-                        # Fallback mode
-                        st.warning("⚠️ PNG export not available in this environment.")
-                        st.download_button(
-                            label="⬇️ Download DOT source",
-                            data=graph.source,
-                            file_name="flowchart.dot",
-                            mime="text/vnd.graphviz"
-                        )
-                        st.caption("""💡 Tip: Open `.dot` file in VSCode or convert it online to PNG
-                                   [e.g. here](https://dreampuf.github.io/GraphvizOnline/).""")
-
-                except Exception as e:
-                    st.error(f"❌ Error: Could not parse code.\n\n**Details:** {e}")
+        except SyntaxError as e:
+            st.error(f"❌ Syntax Error: Your Python code is invalid.\n\n**Details:** {e}")
+        except Exception as e:
+            st.error(f"❌ An unexpected error occurred.\n\n**Details:** {e}")
 
     st.markdown("---")
     st.caption("💡 100% offline, no data leaves your machine.")
