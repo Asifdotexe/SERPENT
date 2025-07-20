@@ -88,7 +88,7 @@ def main() -> None:
                 st.warning("⚠️ Please paste some Python code first.")
             else:
                 try:
-                    # checking if the code is valid Python
+                    # Validate Python syntax (actual parsing done in generate_graphviz_flowchart)
                     ast.parse(code)
                     graph = generate_graphviz_flowchart(code, title=chart_title)
 

@@ -64,7 +64,7 @@ class PythonFlowchartGV(ast.NodeVisitor):
         Creates a flowchart node representing the function, traverses its statements,
         and updates the flow stack to resume the parent scope after processing.
 
-        :param node: The AST node representing the Function defination.
+        :param node: The AST node representing the Function definition.
         """
         self.new_node(f"Function: {node.name}", "oval")
 
@@ -81,7 +81,7 @@ class PythonFlowchartGV(ast.NodeVisitor):
         so their flows originate from the decision node, and merges the flow at the end of the branches
         to maintain correct control flow in the graph.
 
-        :param node: The AST node representing the If loop.
+        :param node: The AST node representing the `if` loop.
         """
         cond = self.new_node(f"If: {ast.unparse(node.test)}", "diamond")
 
@@ -157,11 +157,10 @@ class PythonFlowchartGV(ast.NodeVisitor):
         """Visit an expression statement node and add it as a box-shaped node to the flowchart,
         excluding standalone string literals such as docstrings.
 
-        :param node: The AST node representing the Expression statment.
+        :param node: The AST node representing the Expression statement.
         """
         # Ignore standalone string literals (often docstrings) as flowchart nodes.
-        if isinstance(node.value, (ast.Str, ast.Constant)) \
-                and isinstance(node.value.value, str):
+        if isinstance(node.value, ast.Constant) and isinstance(node.value.value, str):
             return
 
         self.new_node(ast.unparse(node).strip(), "box")
