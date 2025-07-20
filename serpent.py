@@ -31,7 +31,7 @@ hide_default_format = """
        """
 st.markdown(hide_default_format, unsafe_allow_html=True)
 
-# Example placeholder text
+# --- Placeholder and example code ---
 placeholder_code = textwrap.dedent("""\
     def should_i_code_today(coffee_level, deadline_approaching):
         if deadline_approaching:
@@ -42,23 +42,19 @@ placeholder_code = textwrap.dedent("""\
             return "Go get more coffee, then we'll talk."
 """)
 
+
+# --- Main application logic ---
 def main() -> None:
     """Launches the Streamlit web application for converting Python functions into flowcharts using Graphviz.
-
-    Provides a user interface for inputting Python code, specifying a flowchart title,
-    and generating a visual flowchart representation. Handles user guidance, error checking,
-    and allows downloading the generated flowchart as a PNG image.
     """
     st.title("🐍 SERPENT: Python ➜ Flowchart Generator")
-    st.caption("Turn your Python functions into clear, standard flowcharts in a few clicks. Fully offline & easy.")
+    st.caption("Turn your Python functions into clear, standard flowcharts in a few clicks. Fully locally & easy.")
 
     with st.expander("📌 How to use this tool", expanded=False):
         st.markdown("""
-        ✅ Paste valid Python **function(s)** only. \n
-        ✅ Indentation must follow Python syntax. \n
-        ✅ Comments & docstrings are ignored automatically. \n
-        ✅ Add a custom title if you want. \n
-        ✅ Click **Generate** to see your flowchart side-by-side.
+        1.  **Paste your code**: Drop a valid Python function into the text area.
+        2.  **Add a title**: Give your flowchart a descriptive title.
+        3.  **Generate**: Click the button to see your flowchart appear side-by-side.
         """)
         st.code(placeholder_code, language="python")
 
