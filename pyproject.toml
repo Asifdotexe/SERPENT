@@ -32,7 +32,7 @@ classifiers = ["Development Status :: 4 - Beta",
 
 dependencies = ["streamlit==1.46.1",
                 "graphviz==0.20.3",
-                "streamlit-extras"]
+                "streamlit-extras>=0.6.0"]
 
 [project.optional-dependencies]
 dev = ["flake8"]
