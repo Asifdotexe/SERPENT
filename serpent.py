@@ -109,7 +109,7 @@ def main() -> None:
                 st.download_button(
                     label="📥 Download as PNG",
                     data=png_bytes,
-                    file_name="flowchart.png",
+                    file_name=f"{chart_title.replace(' ', '_').lower()}.png",
                     mime="image/png",
                     help="Download the flowchart as a PNG image."
                 )
@@ -119,7 +119,7 @@ def main() -> None:
                 st.download_button(
                     label="⬇️ Download DOT source",
                     data=graph.source,
-                    file_name="flowchart.dot",
+                    file_name=f"{chart_title.replace(' ', '_').lower()}.dot",
                     mime="text/vnd.graphviz",
                     help="Download the Graphviz source file (.dot) to render it locally."
                 )
