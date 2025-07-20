@@ -7,6 +7,7 @@ Purpose:
 
 import ast
 import shutil
+import textwrap
 
 import streamlit as st
 
@@ -31,17 +32,15 @@ hide_default_format = """
 st.markdown(hide_default_format, unsafe_allow_html=True)
 
 # Example placeholder text
-placeholder_code = '''\
-def example(x):
-    if x > 0:
-        print("Positive")
-    else:
-        print("Zero or Negative")
-    for i in range(3):
-        print(i)
-    return x
-'''
-
+placeholder_code = textwrap.dedent("""\
+    def should_i_code_today(coffee_level, deadline_approaching):
+        if deadline_approaching:
+            return "Code like your life depends on it!"
+        elif coffee_level > 5:
+            return "Let's write some beautiful, elegant code."
+        else:
+            return "Go get more coffee, then we'll talk."
+""")
 
 def main() -> None:
     """Launches the Streamlit web application for converting Python functions into flowcharts using Graphviz.
