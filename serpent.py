@@ -8,15 +8,20 @@ Purpose:
 import ast
 import shutil
 import textwrap
+from PIL import Image
 
 import streamlit as st
 
 from serpent_scripts.serpent_graphviz import generate_graphviz_flowchart
 
+# --- Load assets ---
+logo = Image.open(r'..\SERPENT\examples\serpent_logo_transparent.png')
+banner = Image.open(r'..\SERPENT\examples\serpent_banner_transparent.png')
+
 # --- Page Configuration ---
 st.set_page_config(
     page_title="SERPENT",
-    page_icon="🐍",
+    page_icon=logo,
     layout="wide",
     initial_sidebar_state="collapsed"
     )
@@ -47,7 +52,7 @@ placeholder_code = textwrap.dedent("""\
 def main() -> None:
     """Launches the Streamlit web application for converting Python functions into flowcharts using Graphviz.
     """
-    st.title("🐍 SERPENT: Python ➜ Flowchart Generator")
+    st.image(banner, use_container_width=True)
     st.caption("Turn your Python functions into clear, standard flowcharts in a few clicks. Fully locally & easy.")
 
     with st.expander("📌 How to use this tool", expanded=False):
@@ -64,7 +69,7 @@ def main() -> None:
     input_col, output_col = st.columns(2)
 
     with input_col:
-        st.subheader("✏️ Input")
+        st.subheader("Input")
         code = st.text_area(
             "Your Python Code",
             height=350,
@@ -79,12 +84,15 @@ def main() -> None:
         )
 
         generate = st.button(
-            "✨ Generate Flowchart",
-            help="Click here to generate the flowchart from your code."
+            "Generate Flowchart",
+            help="Click here to generate the flowchart from your code.",
+            type="primary",
+            use_container_width=True,
+            icon=":material/flowchart:"
         )
 
     with output_col:
-        st.subheader("🗂️ Output")
+        st.subheader("Output")
 
         if not generate:
             st.info("Your generated flowchart will appear here.")
@@ -111,7 +119,9 @@ def main() -> None:
                     data=png_bytes,
                     file_name=f"{chart_title.replace(' ', '_').lower()}.png",
                     mime="image/png",
-                    help="Download the flowchart as a PNG image."
+                    help="Download the flowchart as a PNG image.",
+                    use_container_width=True,
+                    type='primary'
                 )
             else:
                 # Fallback mode
