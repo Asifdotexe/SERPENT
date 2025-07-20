@@ -35,11 +35,10 @@ def example(x):
 
 
 def main() -> None:
-    """Launches the Streamlit web application for converting Python functions into flowcharts using Graphviz.
-
-    Provides a user interface for inputting Python code, specifying a flowchart title,
-    and generating a visual flowchart representation. Handles user guidance, error checking,
-    and allows downloading the generated flowchart as a PNG image.
+    """
+    Launches the Streamlit web application for converting Python functions into flowcharts using Graphviz.
+    
+    Provides an interactive interface for users to input Python code, specify a flowchart title, and generate a visual flowchart. Handles code validation, error feedback, and enables downloading the resulting flowchart as a PNG image or DOT source file, depending on environment capabilities.
     """
     st.set_page_config(
         page_title="SERPENT",
