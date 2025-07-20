@@ -1,5 +1,4 @@
-"""
-Streamlit app for the Python flowchart tool.
+"""Launch the Streamlit web application for converting Python functions into flowcharts using Graphviz.
 
 Purpose:
 - Clean side-by-side layout: input left, output right.
@@ -11,7 +10,7 @@ import shutil
 
 import streamlit as st
 
-from code.serpent_graphviz import generate_graphviz_flowchart
+from serpent.serpent_graphviz import generate_graphviz_flowchart
 
 # Hide default Streamlit header and footer
 hide_default_format = """
@@ -34,9 +33,9 @@ def example(x):
     return x
 '''
 
-def main():
-    """
-    Launches the Streamlit web application for converting Python functions into flowcharts using Graphviz.
+
+def main() -> None:
+    """Launches the Streamlit web application for converting Python functions into flowcharts using Graphviz.
 
     Provides a user interface for inputting Python code, specifying a flowchart title,
     and generating a visual flowchart representation. Handles user guidance, error checking,
@@ -89,7 +88,8 @@ def main():
                 st.warning("⚠️ Please paste some Python code first.")
             else:
                 try:
-                    tree = ast.parse(code)
+                    # Validate Python syntax (actual parsing done in generate_graphviz_flowchart)
+                    ast.parse(code)
                     graph = generate_graphviz_flowchart(code, title=chart_title)
 
                     st.success("✅ Flowchart generated!")
@@ -113,14 +113,15 @@ def main():
                             file_name="flowchart.dot",
                             mime="text/vnd.graphviz"
                         )
-                        st.caption("💡 Tip: Open `.dot` file in VSCode or convert it online to PNG [e.g. here](https://dreampuf.github.io/GraphvizOnline/).")
-
+                        st.caption("""💡 Tip: Open `.dot` file in VSCode or convert it online to PNG
+                                   [e.g. here](https://dreampuf.github.io/GraphvizOnline/).""")
 
                 except Exception as e:
                     st.error(f"❌ Error: Could not parse code.\n\n**Details:** {e}")
 
     st.markdown("---")
     st.caption("💡 100% offline, no data leaves your machine.")
+
 
 if __name__ == "__main__":
     main()

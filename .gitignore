@@ -1,3 +1,5 @@
 venv/
 __pycache__/
 .idea/
+SERPENT.egg-info/
+build/
