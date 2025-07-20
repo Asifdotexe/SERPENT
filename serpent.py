@@ -65,7 +65,7 @@ def main() -> None:
 
     st.divider()
 
-    # === Side-by-side layout ===
+    # --- Side-by-side layout ---
     input_col, output_col = st.columns(2)
 
     with input_col:
