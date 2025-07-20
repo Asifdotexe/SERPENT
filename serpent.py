@@ -10,7 +10,7 @@ import shutil
 
 import streamlit as st
 
-from serpent.serpent_graphviz import generate_graphviz_flowchart
+from serpent_scripts.serpent_graphviz import generate_graphviz_flowchart
 
 # Hide default Streamlit header and footer
 hide_default_format = """
