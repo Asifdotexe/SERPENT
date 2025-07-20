@@ -10,8 +10,8 @@ import ast
 import shutil
 import textwrap
 from pathlib import Path
-from PIL import Image
 
+from PIL import Image
 import streamlit as st
 from streamlit_extras.avatar import avatar
 from streamlit_extras.badges import badge
