@@ -1,43 +1,26 @@
-[build-system]
-requires = ["setuptools>=61.0"]
-build-backend = "setuptools.build_meta"
-
-[project]
-name = "SERPENT"
+[tool.poetry]
+name = "serpent-viz"
 version = "0.1.0"
 description = "A Python function to flowchart generator with a Streamlit GUI."
+authors = ["Asif Sayyed <asifdotexe@gmail.com>"]
 readme = "README.md"
-requires-python = ">=3.10"
-license = { file = "LICENSE" }
-keywords = ["flowchart", "code visualization", "streamlit", "graphviz", "python",
-            "flowchart generator", "code to flowchart", "serpent"]
-authors = [{ name = "Asif Sayyed", email = "asifdotexe@gmail.com" },]
+license = "MIT"
+keywords = ["flowchart", "code visualization", "streamlit", "graphviz"]
+packages = [{include = "serpent"}]
 
-classifiers = ["Development Status :: 4 - Beta",
-                "Intended Audience :: Developers",
-                "Intended Audience :: Education",
-                "Intended Audience :: Science/Research",
-                "License :: OSI Approved :: MIT License",
-                "Programming Language :: Python :: 3.9",
-                "Programming Language :: Python :: 3.10",
-                "Programming Language :: Python :: 3.11",
-                "Programming Language :: Python :: 3.12",
-                "Programming Language :: Python :: 3.13",
-                "Environment :: Web Environment",
-                "Framework :: Streamlit",
-                "Operating System :: OS Independent",
-                "Topic :: Scientific/Engineering :: Visualization",
-                "Topic :: Software Development :: Documentation",
-                "Topic :: Utilities"]
+[tool.poetry.dependencies]
+python = "^3.10"
+streamlit = "^1.46.1"
+graphviz = "^0.20.3"
+streamlit-extras = "^0.6.0"
 
-dependencies = ["streamlit==1.46.1",
-                "graphviz==0.20.3",
-                "streamlit-extras>=0.6.0"]
+[tool.poetry.group.dev.dependencies]
+pytest = "^8.3"
+flake8 = "^7.1.1"
 
-[project.optional-dependencies]
-dev = ["flake8"]
+[tool.poetry.scripts]
+serpent = "serpent.app:main"
 
-[project.urls]
-"Homepage" = "https://github.com/asifdotexe/serpent"
-"Repository" = "https://github.com/asifdotexe/serpent"
-"Bug Tracker" = "https://github.com/asifdotexe/serpent/issues"
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"

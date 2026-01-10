@@ -17,17 +17,36 @@ from streamlit_extras.avatar import avatar
 from streamlit_extras.badges import badge
 from streamlit_extras.stylable_container import stylable_container
 
-from serpent_scripts.serpent_graphviz import generate_graphviz_flowchart
+# Updated import to relative path within the package
+from .graphviz import generate_graphviz_flowchart
 
 # --- Asset Loading ---
-# Use pathlib for more robust path handling
-assets_dir = Path(__file__).parent / "examples"
+# Why we doing this?
+# ------------------
+# We need to find where the images are sitting.
+# Using `pathlib` is safer than raw strings, so we don't breaks things on Windows/Mac.
+# Adjusted path: We are now in `serpent/` subdirectory, so examples are up one level.
+# Actually, if we are packaging, assets should ideally be in `serpent/assets` or similar, 
+# but for now we follow the structure relative to the project root.
+# Let's assume the user runs this from root or installed package.
+# If installed, __file__ is in site-packages/serpent/app.py.
+# The `examples` folder is at root of repo.
+# For simplicity, let's look for examples relative to this file, assuming standard repo structure.
+# Repo:
+# serpent/app.py
+# examples/
+# So examples is `../examples`
+assets_dir = Path(__file__).parent.parent / "examples"
 try:
     logo = Image.open(assets_dir / "serpent_logo_transparent.png")
     banner = Image.open(assets_dir / "serpent_banner_transparent.png")
 except FileNotFoundError as e:
-    st.error(f"Asset not found: {e}")
-    st.stop()
+    # If images are missing, we stop the show. Can't run a show without costumes!
+    # st.error(f"Asset not found: {e}")
+    # st.stop()
+    # Fallback to no images if not found (safer for package distribution if assets aren't included yet)
+    logo = None
+    banner = None
 
 # --- Page Configuration ---
 st.set_page_config(
@@ -38,6 +57,10 @@ st.set_page_config(
 )
 
 # --- Custom CSS ---
+# Why we doing this?
+# ------------------
+# Just hiding the boring default Streamlit menu and footer.
+# Also making buttons full width because big buttons are clickable buttons.
 st.markdown("""
     <style>
     #MainMenu {visibility: hidden;}
@@ -47,6 +70,7 @@ st.markdown("""
 """, unsafe_allow_html=True)
 
 # --- Placeholder Code ---
+# A little sample to show user what to do.
 placeholder_code = textwrap.dedent("""\
     def should_i_code_today(coffee_level, deadline_approaching):
         if deadline_approaching:
@@ -60,10 +84,22 @@ placeholder_code = textwrap.dedent("""\
 
 # --- Main Application Logic ---
 def main() -> None:
-    """Launch the Streamlit web application for converting Python functions into flowcharts."""
-    st.image(banner, use_container_width=True)
+    """
+    Launch the Streamlit web application.
+    
+    Why we doing this?
+    ------------------
+    This is the main entry point. It paints the UI, takes the user input,
+    calls the generator, and serves the hot, fresh flowchart.
+    """
+    if banner:
+        st.image(banner, use_container_width=True)
+    else:
+        st.title("SERPENT") # Fallback title
+        
     st.caption('Turn your Python functions into clear, standard flowcharts in a few clicks. Fully local & easy.')
 
+    # Using avatar to show who's the boss (author).
     avatar([
         {
             "url": "https://avatars.githubusercontent.com/u/115421661?v=4",
@@ -133,15 +169,17 @@ def main() -> None:
         if not generate:
             st.info("Your generated flowchart will appear here.")
         elif not code.strip():
-            st.warning("⚠️ Please paste some Python code first.")
+            st.warning("⚠️ Please paste some Python code first. Can't make juice without oranges!")
         else:
             try:
+                # Validating input first. Safety first!
                 ast.parse(code)
                 graph = generate_graphviz_flowchart(code, title=chart_title)
-                st.success("✅ Flowchart generated!")
+                st.success("✅ Flowchart generated! Looking good.")
                 st.graphviz_chart(graph.source)
 
                 # --- Download Buttons ---
+                # If 'dot' is installed, we can give a PNG. If not, only DOT file.
                 if shutil.which("dot"):
                     png_bytes = graph.pipe(format='png')
                     st.download_button(
@@ -154,7 +192,7 @@ def main() -> None:
                         type='primary'
                     )
                 else:
-                    st.warning("⚠️ PNG export not available in this environment.")
+                    st.warning("⚠️ PNG export not available. Install Graphviz system-wide to enable it.")
                     st.download_button(
                         label="⬇️ Download DOT source",
                         data=graph.source,
@@ -162,12 +200,12 @@ def main() -> None:
                         mime="text/vnd.graphviz",
                         help="Download the Graphviz source file (.dot) to render it locally."
                     )
-                    st.caption("💡 Tip: Use a `.dot` file with VSCode or online viewers.")
+                    st.caption("💡 Tip: You can view `.dot` files in VSCode or online.")
 
             except SyntaxError as e:
                 st.error(f"❌ Syntax Error: Your Python code is invalid.\n\n**Details:** {e}")
             except Exception as e:
-                st.error(f"❌ An unexpected error occurred.\n\n**Details:** {e}")
+                st.error(f"❌ An unexpected error occurred. Something broke!\n\n**Details:** {e}")
 
     st.divider()
     st.caption("Like the result? Starring the repository helps a lot!")
