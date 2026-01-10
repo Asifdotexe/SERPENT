@@ -13,7 +13,7 @@ from graphviz import Digraph
 
 class PythonFlowchartGV(ast.NodeVisitor):
     """
-    A custom AST NodeVisitor that generates a Graphviz Digraph representing the control flow of Python code.
+    Custom AST NodeVisitor that generates Graphviz Digraph representing the control flow of Python code
 
     This class walks through the Python code structure (AST) and converts it into a visual graph.
     Instead of boring old stack, we use a smarter `last_nodes` list to keep track of connections.
@@ -24,7 +24,8 @@ class PythonFlowchartGV(ast.NodeVisitor):
         Initialize the Flowchart Visitor.
 
         We need to setup the blank canvas (Digraph) where we will draw our shapes.
-        Also need some counters and lists to remember where we came from, so we know where to go next.
+        Also need some counters and lists to remember where we came from,
+        so we know where to go next.
         """
         self.graph: Digraph = Digraph(format="png")
         self.counter: int = 0
@@ -37,7 +38,8 @@ class PythonFlowchartGV(ast.NodeVisitor):
         self.last_nodes: list[Union[str, tuple[str, Optional[str]]]] = []
 
         # Why loop_stack?
-        # Loops are tricky, bhai. Sometimes you want to `break` out (exit) or `continue` (go back start).
+        # Loops are tricky, bhai.
+        # Sometimes you want to `break` out (exit) or `continue` (go back start).
         # We need to remember which loop we are currently inside so we know where to jump to.
         # It's like inception - loop inside loop inside loop.
         self.loop_stack: list[dict[str, Any]] = []

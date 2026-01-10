@@ -50,7 +50,8 @@ st.markdown(
 )
 
 # A little sample to show user what to do.
-placeholder_code = textwrap.dedent("""\
+placeholder_code = textwrap.dedent(
+    """\
     def should_i_code_today(coffee_level: int, deadline_approaching: bool) -> str:
         if deadline_approaching:
             return "Code like your life depends on it!"
@@ -58,7 +59,8 @@ placeholder_code = textwrap.dedent("""\
             return "Let's write some beautiful, elegant code."
         else:
             return "Go get more coffee, then we'll talk."
-""")
+"""
+)
 
 
 def main() -> None:
@@ -92,11 +94,13 @@ def main() -> None:
     )
 
     with st.expander("How to use this tool?"):
-        st.markdown("""
+        st.markdown(
+            """
         1.  **Paste your code**: Drop a valid Python function into the text area.
         2.  **Add a title**: Give your flowchart a descriptive title.
         3.  **Generate**: Click the button to see your flowchart appear side-by-side.
-        """)
+        """
+        )
         st.code(placeholder_code, language="python")
 
     st.divider()

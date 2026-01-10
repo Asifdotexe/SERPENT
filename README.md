@@ -95,7 +95,7 @@ Poetry handles all the library magic for us.
 
 #### Install Graphviz (The Drawing Engine)
 This tool allows Python to generate the actual images.
-- **Windows**: 
+- **Windows**:
   - Download the installer from [graphviz.org](https://graphviz.org/download/).
   - *Crucial Step*: select **"Add Graphviz to the system PATH for all users"** during installation.
 - **macOS**: `brew install graphviz`
@@ -115,7 +115,7 @@ This tool allows Python to generate the actual images.
     poetry install
     ```
 
-### 3. Run the App 
+### 3. Run the App
 
 Launch the application with a single command:
 ```bash
