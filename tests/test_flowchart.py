@@ -1,6 +1,7 @@
-
 import pytest
+
 from serpent.core import generate_graphviz_flowchart
+
 
 def test_simple_function():
     """
@@ -17,6 +18,7 @@ def hello():
     assert "print" in source
     assert "Return" in source
 
+
 def test_if_else():
     """
     Test if/else branching logic.
@@ -31,10 +33,11 @@ else:
     source = graph.source
     # Check for diamond (condition)
     assert "If: x > 5" in source
-    assert 'shape=diamond' in source
+    assert "shape=diamond" in source
     # Check for True/False edges
-    assert 'label=True' in source
-    assert 'label=False' in source
+    assert "label=True" in source
+    assert "label=False" in source
+
 
 def test_loop_with_break():
     """
@@ -50,8 +53,9 @@ while True:
     source = graph.source
     assert "While: True" in source
     assert "break" in source
-    # We can't easily check edge connectivity via regex on DOT, 
+    # We can't easily check edge connectivity via regex on DOT,
     # but presence of nodes is a good start.
+
 
 def test_invalid_syntax():
     """
