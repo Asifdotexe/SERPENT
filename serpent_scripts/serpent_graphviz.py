@@ -13,7 +13,8 @@ from graphviz import Digraph
 
 class PythonFlowchartGV(ast.NodeVisitor):
     """
-    Custom AST NodeVisitor that generates Graphviz Digraph representing the control flow of Python code
+    Custom AST NodeVisitor that generates Graphviz Digraph
+    representing the control flow of Python code
 
     This class walks through the Python code structure (AST) and converts it into a visual graph.
     Instead of boring old stack, we use a smarter `last_nodes` list to keep track of connections.
@@ -59,8 +60,10 @@ class PythonFlowchartGV(ast.NodeVisitor):
 
         :param label: The text to display inside the box/diamond/circle.
         :param shape: The geometric shape of the node (box, diamond, oval, etc.).
-        :param connect_from: Specific list of nodes to connect FROM. If None, uses the last visited nodes.
-        :param edge_label: Text to write on the arrow connecting to this new node (e.g., "True", "False").
+        :param connect_from: Specific list of nodes to connect FROM.
+                             If None, uses the last visited nodes.
+        :param edge_label: Text to write on the arrow connecting to this new node
+                           (e.g., "True", "False").
         :return: The unique ID of the newly created node (like "n1", "n2").
         """
         # Global override check
@@ -146,7 +149,8 @@ class PythonFlowchartGV(ast.NodeVisitor):
 
         # Condition is "True"
         # We prepare to visit the lines inside the `if` block.
-        # We cheat a bit and set a global flag so the first node inside gets connected with "True" label.
+        # We cheat a bit and set a global flag
+        # so the first node inside gets connected with "True" label.
         self.last_nodes = [decision_node_id]
         true_end_nodes = []
 
@@ -227,7 +231,8 @@ class PythonFlowchartGV(ast.NodeVisitor):
         # Using diamond because it is a decision point (True/False).
         condition_node = self.new_node(label, shape="diamond")
 
-        # We push a new context to the stack so `break` and `continue` know who their daddy is (current loop).
+        # We push a new context to the stack
+        # so `break` and `continue` know who their daddy is (current loop).
         self.loop_stack.append(
             {"break": [], "continue": [], "start_node": condition_node}
         )

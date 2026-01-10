@@ -24,7 +24,8 @@ try:
     logo = Image.open(assets_dir / "serpent_logo_transparent.png")
     banner = Image.open(assets_dir / "serpent_banner_transparent.png")
 except FileNotFoundError:
-    # Fallback to no images if not found (safer for package distribution if assets aren't included yet)
+    # Fallback to no images if not found
+    # (safer for package distribution if assets aren't included yet)
     logo = None
     banner = None
 
@@ -81,13 +82,16 @@ def main() -> None:
     )
 
     # Using avatar to show who's the boss (author).
+    caption_msg = (
+        "Hey, turn your code into a flowchart and turn knowledge sharing into a breeze."
+    )
     avatar(
         [
             {
                 "url": "https://avatars.githubusercontent.com/u/115421661?v=4",
                 "size": 40,
                 "title": "Asif Sayyed",
-                "caption": "Hey, turn your code into a flowchart and turn knowledge sharing into a breeze.",
+                "caption": caption_msg,
                 "key": "author_avatar",
             }
         ]
@@ -127,7 +131,8 @@ def main() -> None:
             "Your Python Code",
             height=350,
             placeholder="def my_function(): ...",
-            help="Paste a valid Python function here, The script will ignore comments and docstrings.",
+            help="""Paste a valid Python function here,
+            The script will ignore comments and docstrings.""",
         )
         chart_title = st.text_input(
             "Flowchart Title",

@@ -25,6 +25,10 @@ pre-commit = "^4.5.1"
 [tool.poetry.scripts]
 serpent = "serpent.app:main"
 
+[tool.pylint.messages_control]
+disable = ["redefined-outer-name", "invalid-name", "assignment-from-no-return", "too-many-branches",
+           "unused-argument", "unnecessary-pass", "fixme", "too-few-public-methods"]
+
 [build-system]
 requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"

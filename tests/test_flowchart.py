@@ -1,4 +1,6 @@
-import pytest
+"""
+Module for testing the flowchart generation functionality.
+"""
 
 from serpent.core import generate_graphviz_flowchart
 

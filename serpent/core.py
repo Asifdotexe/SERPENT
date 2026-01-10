@@ -13,7 +13,8 @@ from graphviz import Digraph
 
 class PythonFlowchartGV(ast.NodeVisitor):
     """
-    A custom AST NodeVisitor that generates a Graphviz Digraph representing the control flow of Python code.
+    A custom AST NodeVisitor that generates a Graphviz Digraph
+    representing the control flow of Python code.
 
     This class walks through the Python code structure (AST) and converts it into a visual graph.
     Instead of boring old stack, we use a smarter `last_nodes` list to keep track of connections.
@@ -24,7 +25,8 @@ class PythonFlowchartGV(ast.NodeVisitor):
         Initialize the Flowchart Visitor.
 
         We need to setup the blank canvas (Digraph) where we will draw our shapes.
-        Also need some counters and lists to remember where we came from, so we know where to go next.
+        Also need some counters and lists to remember where we came from,
+        so we know where to go next.
         """
         self.graph: Digraph = Digraph(format="png")
         self.counter: int = 0
@@ -37,7 +39,8 @@ class PythonFlowchartGV(ast.NodeVisitor):
         self.last_nodes: list[Union[str, tuple[str, Optional[str]]]] = []
 
         # Why loop_stack?
-        # Loops are tricky, bhai. Sometimes you want to `break` out (exit) or `continue` (go back start).
+        # Loops are tricky, bhai.
+        # Sometimes you want to `break` out (exit) or `continue` (go back start).
         # We need to remember which loop we are currently inside so we know where to jump to.
         # It's like inception - loop inside loop inside loop.
         self.loop_stack: list[dict[str, Any]] = []
@@ -57,12 +60,15 @@ class PythonFlowchartGV(ast.NodeVisitor):
 
         :param label: The text to display inside the box/diamond/circle.
         :param shape: The geometric shape of the node (box, diamond, oval, etc.).
-        :param connect_from: Specific list of nodes to connect FROM. If None, uses the last visited nodes.
-        :param edge_label: Text to write on the arrow connecting to this new node (e.g., "True", "False").
+        :param connect_from: Specific list of nodes to connect FROM.
+                             If None, uses the last visited nodes.
+        :param edge_label: Text to write on the arrow connecting to this new node
+                           (e.g., "True", "False").
         :return: The unique ID of the newly created node (like "n1", "n2").
         """
         # Global override check
-        # Checking if some previous logic left a note saying "Hey, the next edge needs this label!"
+        # Checking if some previous logic left a note saying
+        # "Hey, the next edge needs this label!"
         override_label = getattr(self, "next_edge_label", None)
         if override_label:
             edge_label = override_label
@@ -144,7 +150,8 @@ class PythonFlowchartGV(ast.NodeVisitor):
 
         # Condition is "True"
         # We prepare to visit the lines inside the `if` block.
-        # We cheat a bit and set a global flag so the first node inside gets connected with "True" label.
+        # We cheat a bit and set a global flag
+        # so the first node inside gets connected with "True" label.
         self.last_nodes = [decision_node_id]
         true_end_nodes = []
 
@@ -167,7 +174,8 @@ class PythonFlowchartGV(ast.NodeVisitor):
                 self.visit(stmt)
             false_end_nodes = self.last_nodes
         else:
-            # If there is no else, the False path goes straight from decision to the merge point.
+            # If there is no else,
+            # the False path goes straight from decision to the merge point.
             # We explicitly label this edge as "False".
             false_end_nodes = [(decision_node_id, "False")]
 
@@ -225,7 +233,8 @@ class PythonFlowchartGV(ast.NodeVisitor):
         # Using diamond because it is a decision point (True/False).
         condition_node = self.new_node(label, shape="diamond")
 
-        # We push a new context to the stack so `break` and `continue` know who their daddy is (current loop).
+        # We push a new context to the stack
+        # so `break` and `continue` know who their daddy is (current loop).
         self.loop_stack.append(
             {"break": [], "continue": [], "start_node": condition_node}
         )
