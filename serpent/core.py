@@ -228,7 +228,8 @@ class PythonFlowchartGV(ast.NodeVisitor):
         Also handles those rebellious `break` and `continue` statements.
         """
         # 1. The Gatekeeper (Condition Node)
-        condition_node = self.new_node(label, shape="circle")
+        # Using diamond because it is a decision point (True/False).
+        condition_node = self.new_node(label, shape="diamond")
         
         # We push a new context to the stack so `break` and `continue` know who their daddy is (current loop).
         self.loop_stack.append({'break': [], 'continue': [], 'start_node': condition_node})

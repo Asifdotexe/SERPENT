@@ -1,6 +1,6 @@
 
 import pytest
-from serpent.graphviz import generate_graphviz_flowchart
+from serpent.core import generate_graphviz_flowchart
 
 def test_simple_function():
     """

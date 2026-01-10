@@ -17,8 +17,18 @@ from streamlit_extras.avatar import avatar
 from streamlit_extras.badges import badge
 from streamlit_extras.stylable_container import stylable_container
 
-# Updated import to relative path within the package
-from .graphviz import generate_graphviz_flowchart
+try:
+    from serpent.core import generate_graphviz_flowchart
+except ImportError:
+    # Fallback for some other environments, though the above is preferred
+    # and we strongly suggest running from root.
+    # If this fails, we will try relative (unlikely to work with streamlit run)
+    try:
+        from .core import generate_graphviz_flowchart
+    except ImportError:
+        # Last resort: direct import if path is totally messed up but file is there
+        import core
+        generate_graphviz_flowchart = core.generate_graphviz_flowchart
 
 # --- Asset Loading ---
 # Why we doing this?
