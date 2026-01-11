@@ -6,8 +6,10 @@ Purpose:
 - Uses modern Streamlit layout features for clarity.
 """
 
+import re
 import ast
 import shutil
+import logging
 import textwrap
 from pathlib import Path
 
@@ -176,15 +178,20 @@ def main() -> None:
                 st.success("✅ Flowchart generated! Looking good.")
                 st.graphviz_chart(graph.source)
 
+                # Sanitize chart_title for filename
+                # Collapse whitespace, remove unsafe chars, lower case, truncate
+                safe_title = re.sub(r"[^a-z0-9_\-]", "", chart_title.lower().replace(" ", "_"))
+                safe_title = re.sub(r"_+", "_", safe_title).strip("_")
+                safe_title = safe_title[:50] or "flowchart"
+
                 # Download Buttons
                 # If 'dot' is installed, we can give a PNG. If not, only DOT file.
-                # TODO: Implement PNG download functionality
                 if shutil.which("dot"):
                     png_bytes = graph.pipe(format="png")
                     st.download_button(
                         label="📥 Download as PNG",
                         data=png_bytes,
-                        file_name=f"{chart_title.replace(' ', '_').lower()}.png",
+                        file_name=f"{safe_title}.png",
                         mime="image/png",
                         help="Download the flowchart as a PNG image.",
                         use_container_width=True,
@@ -197,7 +204,7 @@ def main() -> None:
                     st.download_button(
                         label="⬇️ Download DOT source",
                         data=graph.source,
-                        file_name=f"{chart_title.replace(' ', '_').lower()}.dot",
+                        file_name=f"{safe_title}.dot",
                         mime="text/vnd.graphviz",
                         help="Download the Graphviz source file (.dot) to render it locally.",
                     )
@@ -207,9 +214,10 @@ def main() -> None:
                 st.error(
                     f"Syntax Error: Your Python code is invalid.\n\n**Details:** {e}"
                 )
-            except Exception as e:
+            except Exception:
+                logging.exception("Unexpected error in main UI loop")
                 st.error(
-                    f"An unexpected error occurred. Something broke!\n\n**Details:** {e}"
+                    "An unexpected error occurred. Please try again or contact support."
                 )
 
     st.divider()
