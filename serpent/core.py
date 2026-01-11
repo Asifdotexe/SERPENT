@@ -156,20 +156,18 @@ class PythonFlowchartGV(ast.NodeVisitor):
         true_end_nodes = []
 
         if node.body:
-            self.next_edge_label = "True"
-            self.last_nodes = [decision_node_id]
+            self.last_nodes = [(decision_node_id, "True")]
             for stmt in node.body:
                 self.visit(stmt)
             true_end_nodes = self.last_nodes
         else:
             # Empty body? Just pass through.
-            true_end_nodes = [decision_node_id]
+            true_end_nodes = [(decision_node_id, "True")]
 
         # Condition is "False"
         false_end_nodes = []
         if node.orelse:
-            self.next_edge_label = "False"
-            self.last_nodes = [decision_node_id]
+            self.last_nodes = [(decision_node_id, "False")]
             for stmt in node.orelse:
                 self.visit(stmt)
             false_end_nodes = self.last_nodes
@@ -240,8 +238,7 @@ class PythonFlowchartGV(ast.NodeVisitor):
         )
 
         # Doing the work (Body - True Path)
-        self.next_edge_label = "True"
-        self.last_nodes = [condition_node]
+        self.last_nodes = [(condition_node, "True")]
 
         for stmt in node.body:
             self.visit(stmt)
@@ -251,7 +248,10 @@ class PythonFlowchartGV(ast.NodeVisitor):
         for n in self.last_nodes:
             src = n[0] if isinstance(n, tuple) else n
             lbl = n[1] if isinstance(n, tuple) else None
-            self.graph.edge(src, condition_node, label=lbl)
+            if lbl:
+                self.graph.edge(src, condition_node, label=lbl)
+            else:
+                self.graph.edge(src, condition_node)
 
         # Handling `continue` (Shortcuts)
         # Any `continue` we found inside just jumps straight back to condition.
@@ -270,7 +270,7 @@ class PythonFlowchartGV(ast.NodeVisitor):
         self.last_nodes = exit_nodes
         self.next_edge_label = None
 
-    def visit_Break(self, node: ast.Break) -> None:
+    def visit_Break(self, _node: ast.Break) -> None:
         """
         Handle `break` statement.
 
@@ -285,7 +285,7 @@ class PythonFlowchartGV(ast.NodeVisitor):
         else:
             self.new_node("break (orphaned)", shape="box")
 
-    def visit_Continue(self, node: ast.Continue) -> None:
+    def visit_Continue(self, _node: ast.Continue) -> None:
         """
         Handle `continue` statement.
 
