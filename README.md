@@ -68,44 +68,60 @@ def fix_bugs(bugs_remaining):
 **Generated Flowchart:**
 ![Flowchart for fixing bugs](examples/well-this-is-bugging-me.png)
 
-## Getting Started
+## Getting Started: Zero to Hero 🚀
 
-### Prerequisites
-`Python 3.8` or above installed on your local machine. I've made it on `Python 3.13.5` to be precise.
+New to Python? No worries! Follow this step-by-step guide to get SERPENT running on your machine.
 
-### Installation
+### 1. Install Prerequisites
 
-1.  Clone the repository:
+#### Install Python (3.10+)
+You need Python to run the code.
+- **Windows**: Download the installer from [python.org](https://www.python.org/downloads/).
+  - *Crucial Step*: Check the box **"Add Python to PATH"** before clicking Install.
+- **macOS**: Use Homebrew: `brew install python`
+- **Linux**: `sudo apt install python3 python3-pip`
+
+#### Install Poetry (Dependency Manager)
+Poetry handles all the library magic for us.
+- **Windows (PowerShell)**:
+  ```powershell
+  (Invoke-WebRequest -Uri https://install.python-poetry.org -UseBasicParsing).Content | python -
+  ```
+- **macOS / Linux**:
+  ```bash
+  curl -sSL https://install.python-poetry.org | python3 -
+  ```
+*After installing, close and reopen your terminal/command prompt.*
+
+#### Install Graphviz (The Drawing Engine)
+This tool allows Python to generate the actual images.
+- **Windows**:
+  - Download the installer from [graphviz.org](https://graphviz.org/download/).
+  - *Crucial Step*: select **"Add Graphviz to the system PATH for all users"** during installation.
+- **macOS**: `brew install graphviz`
+- **Linux**: `sudo apt install graphviz`
+
+### 2. Setup the Project
+
+1.  **Clone the repository**:
     ```bash
     git clone https://github.com/Asifdotexe/SERPENT.git
     cd SERPENT
     ```
 
-2.  Create and activate a virtual environment (recommended):
+2.  **Install Dependencies**:
+    Run this command in the project folder to install everything safely:
     ```bash
-    # Create the environment
-    python -m venv venv
-
-    # Activate on Linux/macOS
-    source venv/bin/activate
-
-    # Activate on Windows
-    venv\Scripts\activate
+    poetry install
     ```
 
-3.  Install all dependencies from `pyproject.toml`:
-    ```bash
-    # Install core app for production
-    pip install .
+### 3. Run the App
 
-    # Installs core app and development tools in editable mode
-    pip install -e .[dev]
-    ```
-
-4.  Run the Streamlit app:
-    ```bash
-    streamlit run serpent.py
-    ```
+Launch the application with a single command:
+```bash
+poetry run streamlit run serpent/app.py
+```
+*Note: The app runs locally in your browser at `http://localhost:8501`.*
 
 ---
 
