@@ -6,7 +6,7 @@ authors = ["Asif Sayyed <asifdotexe@gmail.com>"]
 readme = "README.md"
 license = "MIT"
 keywords = ["flowchart", "code visualization", "streamlit", "graphviz"]
-packages = [{include = "serpent"}]
+packages = [{ include = "serpent", from = "src" }]
 
 [tool.poetry.dependencies]
 python = "^3.10"
@@ -26,8 +26,16 @@ pre-commit = "^4.5.1"
 serpent = "serpent.app:main"
 
 [tool.pylint.messages_control]
-disable = ["redefined-outer-name", "invalid-name", "assignment-from-no-return", "too-many-branches",
-           "unused-argument", "unnecessary-pass", "fixme", "too-few-public-methods"]
+disable = [
+    "redefined-outer-name",
+    "invalid-name",
+    "assignment-from-no-return",
+    "too-many-branches",
+    "unused-argument",
+    "unnecessary-pass",
+    "fixme",
+    "too-few-public-methods",
+]
 
 [build-system]
 requires = ["poetry-core"]
