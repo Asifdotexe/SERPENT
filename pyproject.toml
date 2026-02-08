@@ -22,8 +22,6 @@ isort = "^7.0.0"
 pylint = "^4.0.4"
 pre-commit = "^4.5.1"
 
-[tool.poetry.scripts]
-serpent = "serpent.app:main"
 
 [tool.pylint.messages_control]
 disable = [
