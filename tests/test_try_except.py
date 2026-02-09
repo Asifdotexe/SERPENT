@@ -2,7 +2,7 @@
 from serpent.core import generate_graphviz_flowchart
 
 def test_try_except_structure():
-    """Test that try/except blocks are correctly structure."""
+    """Test that try/except blocks are correctly structured."""
     code = """
 try:
     process()

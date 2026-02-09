@@ -162,7 +162,7 @@ def main() -> None:
                 min-height: 480px;
                 display: flex;
                 align-items: center;
-                justify_content: center;
+                justify-content: center;
                 background-color: rgba(255, 255, 255, 0.05);
             }
             """,
