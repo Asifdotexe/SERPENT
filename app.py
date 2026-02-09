@@ -94,7 +94,7 @@ def main() -> None:
             st.markdown("""
             **How to use:**
             1. Paste your Python function.
-            2. Click **Generate**.
+            2. The flowchart updates automatically.
             3. Download the result.
             
             **Tips:**
@@ -147,7 +147,7 @@ def main() -> None:
 
         chart_title = st.text_input("Chart Title", placeholder="Enter a title (optional)")
         
-        generate_btn = st.button("Generate Flowchart", type="primary", width="stretch")
+
 
     with output_col:
         st.subheader("🖼️ Flowchart")
