@@ -44,6 +44,7 @@ class PythonFlowchartGV(ast.NodeVisitor):
         shape: str = "box",
         connect_from: Optional[list[Union[str, tuple[str, Optional[str]]]]] = None,
         edge_label: str = "",
+        node_type: Optional[str] = None,
     ) -> str:
         """
         Create a new node in the flowchart and connect it to previous nodes.
@@ -53,7 +54,9 @@ class PythonFlowchartGV(ast.NodeVisitor):
             edge_label = override_label
             self.next_edge_label = None
 
-        fillcolor = self.style_config.get(shape, "white")
+        fillcolor = self.style_config.get(node_type, self.style_config.get(shape, "white"))
+
+
 
         node_id = f"n{self.counter}"
         self.counter += 1
@@ -172,21 +175,22 @@ class PythonFlowchartGV(ast.NodeVisitor):
 
     def visit_Break(self, _node: ast.Break) -> None:
         """Handle `break` statement."""
+
         if self.loop_stack:
-            break_node = self.new_node("break", shape="box")
+            break_node = self.new_node("break", shape="box", node_type="break")
             self.loop_stack[-1]["break"].append(break_node)
             self.last_nodes = []
         else:
-            self.new_node("break (orphaned)", shape="box")
+            self.new_node("break (orphaned)", shape="box", node_type="break")
 
     def visit_Continue(self, _node: ast.Continue) -> None:
         """Handle `continue` statement."""
         if self.loop_stack:
-            cont_node = self.new_node("continue", shape="box")
+            cont_node = self.new_node("continue", shape="box", node_type="continue")
             self.loop_stack[-1]["continue"].append(cont_node)
             self.last_nodes = []
         else:
-            self.new_node("continue (orphaned)", shape="box")
+            self.new_node("continue (orphaned)", shape="box", node_type="continue")
 
     def visit_Return(self, node: ast.Return) -> None:
         """Handle `return` statement."""
