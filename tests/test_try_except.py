@@ -1,3 +1,7 @@
+"""
+Test file for try/except blocks.
+"""
+
 from serpent.core import generate_graphviz_flowchart
 
 

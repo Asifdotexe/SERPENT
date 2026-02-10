@@ -1,3 +1,7 @@
+"""
+Test file for break and continue colors.
+"""
+
 from serpent.core import generate_graphviz_flowchart
 from serpent.resources import THEMES
 
