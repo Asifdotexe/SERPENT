@@ -8,7 +8,6 @@ import re
 import shutil
 import textwrap
 from pathlib import Path
-from typing import Any, Dict
 
 import streamlit as st
 from PIL import Image
