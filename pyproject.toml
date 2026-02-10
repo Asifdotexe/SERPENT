@@ -36,6 +36,7 @@ disable = [
 
 [tool.pylint.design]
 max-args = 7
+max-positional-arguments = 7
 
 [tool.pylint.format]
 max-line-length = 120

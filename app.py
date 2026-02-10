@@ -172,6 +172,7 @@ def main() -> None:
             }
             """,
         ):
+            valid_graph = None
             if not code.strip():
                 st.info("Waiting for code input...")
             else:

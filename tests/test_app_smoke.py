@@ -2,16 +2,9 @@
 Smoke tests for the Streamlit application.
 """
 
-import sys
 from pathlib import Path
 
 from streamlit.testing.v1 import AppTest
-
-# Add project root to path to import app.py
-root_dir = Path(__file__).parent.parent
-sys.path.insert(0, str(root_dir))
-
-import app
 
 
 def test_app_startup():

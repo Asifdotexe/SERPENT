@@ -1,14 +1,13 @@
 """
 Core logic for parsing Python code with AST and drawing a flowchart.
-
-It leverages Python's Abstract Syntax Tree (AST) to traverse code structure and `graphviz`
-to generate visual flowcharts.
 """
 
 import ast
 from typing import Any, Optional, Union
 
 from graphviz import Digraph
+
+from serpent.resources import THEMES
 
 
 class PythonFlowchartGV(ast.NodeVisitor):
@@ -28,15 +27,10 @@ class PythonFlowchartGV(ast.NodeVisitor):
         self.counter: int = 0
         self.last_nodes: list[Union[str, tuple[str, Optional[str]]]] = []
         self.loop_stack: list[dict[str, Any]] = []
+        self.next_edge_label: Optional[str] = None
 
         # Default colors if not provided
-        self.style_config = style_config or {
-            "box": "lightyellow",
-            "diamond": "lightblue",
-            "oval": "lightgreen",
-            "circle": "thistle",
-            "parallelogram": "lightcyan",
-        }
+        self.style_config = style_config or THEMES["Classic (Pastel)"]
 
     def new_node(
         self,
