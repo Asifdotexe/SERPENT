@@ -1,5 +1,5 @@
-
 from serpent.core import generate_graphviz_flowchart
+
 
 def test_try_except_structure():
     """Test that try/except blocks are correctly structured."""
@@ -15,12 +15,12 @@ finally:
 """
     graph = generate_graphviz_flowchart(code)
     source = graph.source
-    
+
     # Check for nodes
     assert "label=Try" in source
     assert "label=Attempt" in source
     assert "Exc: ValueError" in source
-    
+
     # Check content
     assert "process" in source
     assert "handle_error" in source

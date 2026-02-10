@@ -28,7 +28,7 @@ class PythonFlowchartGV(ast.NodeVisitor):
         self.counter: int = 0
         self.last_nodes: list[Union[str, tuple[str, Optional[str]]]] = []
         self.loop_stack: list[dict[str, Any]] = []
-        
+
         # Default colors if not provided
         self.style_config = style_config or {
             "box": "lightyellow",
@@ -54,9 +54,9 @@ class PythonFlowchartGV(ast.NodeVisitor):
             edge_label = override_label
             self.next_edge_label = None
 
-        fillcolor = self.style_config.get(node_type, self.style_config.get(shape, "white"))
-
-
+        fillcolor = self.style_config.get(
+            node_type, self.style_config.get(shape, "white")
+        )
 
         node_id = f"n{self.counter}"
         self.counter += 1
@@ -232,7 +232,7 @@ class PythonFlowchartGV(ast.NodeVisitor):
         self.last_nodes = [(try_node, "Attempt")]
         for stmt in node.body:
             self.visit(stmt)
-        
+
         success_nodes = self.last_nodes
         all_end_nodes = []
 
@@ -241,13 +241,13 @@ class PythonFlowchartGV(ast.NodeVisitor):
             exc_label = "Exception"
             if handler.type:
                 exc_label = f"Exc: {ast.unparse(handler.type)}"
-            
+
             # Conceptually, exceptions branch off the "Try" attempt
             self.last_nodes = [(try_node, exc_label)]
-            
+
             for stmt in handler.body:
                 self.visit(stmt)
-            
+
             all_end_nodes.extend(self.last_nodes)
 
         # 3. Else Block (executed if no exception)
@@ -266,7 +266,7 @@ class PythonFlowchartGV(ast.NodeVisitor):
             # Flow continues from end of finally
         else:
             self.last_nodes = all_end_nodes
-        
+
         self.next_edge_label = None
 
     def visit_Raise(self, node: ast.Raise) -> None:

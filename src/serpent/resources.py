@@ -42,16 +42,17 @@ THEMES: Dict[str, Dict[str, str]] = {
         "parallelogram": "#42a5f5",
         "break": "#ffcdd2",
         "continue": "#e1bee7",
-    }
+    },
 }
 
 # --- Examples ---
 EXAMPLES = {
-    "ATM Machine (If/Else)": textwrap.dedent("""\
+    "ATM Machine (If/Else)": textwrap.dedent(
+        """\
         def atm_withdrawal(balance: float, request: float, is_authenticated: bool) -> str:
             if not is_authenticated:
                 return "Authentication failed."
-            
+
             if request <= 0:
                 print("Invalid amount.")
                 result = "Error: Amount must be positive."
@@ -62,31 +63,33 @@ EXAMPLES = {
                 balance -= request
                 print(f"Dispensing ${request}...")
                 result = f"Success. New balance: ${balance}"
-                
+
             return result
-    """),
-    
-    "Smart Light (Loop & Condition)": textwrap.dedent("""\
+    """
+    ),
+    "Smart Light (Loop & Condition)": textwrap.dedent(
+        """\
         def smart_lighting_system(sensor_readings: list[float], threshold: float):
             for reading in sensor_readings:
                 if reading < 0:
                     print("Sensor Error: Negative light level.")
                     continue  # Skip invalid reading
-                
+
                 if reading > threshold:
                     print(f"Bright ({reading} lux): Turning lights OFF.")
                     break  # Sufficient light found, stop checking
                 else:
                     print(f"Dim ({reading} lux): Keep lights ON.")
-            
-            print("Lighting check complete.")
-    """),
 
-    "Server Connection (While Loop)": textwrap.dedent("""\
+            print("Lighting check complete.")
+    """
+    ),
+    "Server Connection (While Loop)": textwrap.dedent(
+        """\
         def connect_to_server(max_retries: int):
             attempt = 0
             connected = False
-            
+
             while attempt < max_retries and not connected:
                 print(f"Connecting... Attempt {attempt + 1}")
                 # Simulate connection logic
@@ -94,14 +97,15 @@ EXAMPLES = {
                     connected = True
                 else:
                     attempt += 1
-            
+
             if connected:
                 return "Connection Established"
             else:
                 return "Connection Failed Service Unavailable"
-    """),
-
-    "File Safer (Try/Except/Finally)": textwrap.dedent("""\
+    """
+    ),
+    "File Safer (Try/Except/Finally)": textwrap.dedent(
+        """\
         def safe_file_reader(filepath: str) -> str:
             file_handle = None
             try:
@@ -121,16 +125,17 @@ EXAMPLES = {
                     print("Closing file handle...")
                     file_handle.close()
                 print("Cleanup complete.")
-    """),
-
-    "Order Processing (Nested)": textwrap.dedent("""\
+    """
+    ),
+    "Order Processing (Nested)": textwrap.dedent(
+        """\
         def process_orders(orders: list[dict]):
             for order in orders:
                 status = order.get("status")
-                
+
                 if status == "cancelled":
                     continue
-                
+
                 if status == "pending":
                     amount = order.get("amount", 0)
                     if amount > 1000:
@@ -142,7 +147,8 @@ EXAMPLES = {
                         print("Auto-approving order")
                 else:
                     print(f"Skipping order with status: {status}")
-            
+
             return "Batch Complete"
-    """),
+    """
+    ),
 }
