@@ -7,6 +7,10 @@ from pathlib import Path
 from streamlit.testing.v1 import AppTest
 
 
+# Add project root to path to import app.py
+root_dir = Path(__file__).parent.parent
+
+
 def test_app_startup():
     """
     Smoke test to verify the app starts up without errors.
