@@ -26,7 +26,6 @@ pre-commit = "^4.5.1"
 [tool.pylint.messages_control]
 disable = [
     "redefined-outer-name",
-    "invalid-name",
     "assignment-from-no-return",
     "too-many-branches",
     "unused-argument",
@@ -34,6 +33,12 @@ disable = [
     "fixme",
     "too-few-public-methods",
 ]
+
+[tool.pylint.design]
+max-args = 7
+
+[tool.pylint.format]
+max-line-length = 120
 
 [build-system]
 requires = ["poetry-core"]
