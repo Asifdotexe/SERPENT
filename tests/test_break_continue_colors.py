@@ -20,7 +20,7 @@ def test_break_continue_colors():
     theme = THEMES["Classic (Pastel)"]
     break_color = theme["break"]      # mistyrose
     continue_color = theme["continue"] # lightgray
-    box_color = theme["box"]          # lightyellow
+
     
     graph = generate_graphviz_flowchart(code, style_config=theme)
     dot_source = graph.source
