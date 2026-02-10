@@ -22,7 +22,7 @@ assets_dir = Path(__file__).parent / "assets"
 try:
     logo = Image.open(assets_dir / "serpent_logo_transparent.png")
     icon = Image.open(assets_dir / "serpent_logo_compact.png") if (assets_dir / "serpent_logo_compact.png").exists() else logo
-except FileNotFoundError:
+except (FileNotFoundError, OSError):
     logo = None
     icon = None
 
