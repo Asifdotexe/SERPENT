@@ -25,19 +25,13 @@ def test_break_continue_colors():
     graph = generate_graphviz_flowchart(code, style_config=theme)
     dot_source = graph.source
     
-    print("Checking for break color:", break_color)
-    if f'fillcolor="{break_color}"' in dot_source or f'fillcolor={break_color}' in dot_source:
-        print("PASS: Break node has correct color.")
-    else:
-        print(f"FAIL: Break node missing color {break_color}")
-        raise AssertionError("Break node styling failed")
+    print(f"Checking for break color: {break_color}")
+    assert f'fillcolor="{break_color}"' in dot_source or f'fillcolor={break_color}' in dot_source, \
+        f"Break node missing color {break_color} in dot_source"
 
-    print("Checking for continue color:", continue_color)
-    if f'fillcolor="{continue_color}"' in dot_source or f'fillcolor={continue_color}' in dot_source:
-        print("PASS: Continue node has correct color.")
-    else:
-        print(f"FAIL: Continue node missing color {continue_color}")
-        raise AssertionError("Continue node styling failed")
+    print(f"Checking for continue color: {continue_color}")
+    assert f'fillcolor="{continue_color}"' in dot_source or f'fillcolor={continue_color}' in dot_source, \
+        f"Continue node missing color {continue_color} in dot_source"
 
 if __name__ == "__main__":
     test_break_continue_colors()
