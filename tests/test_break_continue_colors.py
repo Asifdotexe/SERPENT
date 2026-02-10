@@ -2,6 +2,7 @@
 Test file for break and continue colors.
 """
 
+import textwrap
 from serpent.core import generate_graphviz_flowchart
 from serpent.resources import THEMES
 
@@ -11,8 +12,6 @@ def test_break_continue_colors():
     Verify that break and continue nodes get their specific colors
     from the theme configuration.
     """
-    import textwrap
-
     code = textwrap.dedent(
         """
     while True:
