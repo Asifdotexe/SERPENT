@@ -47,6 +47,9 @@ jobs:
               if (!bodyContent.trim()) {
                   bodyContent = "No output captured from Pylint.";
               }
+              
+              // Sanitize bodyContent to avoid breaking the template literal
+              bodyContent = bodyContent.replace(/`/g, '\\`').replace(/\$\{/g, '\\${');
 
               const outcome = '${{ steps.pylint.outcome }}';
               const icon = outcome === 'success' ? '✅' : '⚠️';
