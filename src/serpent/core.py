@@ -81,7 +81,7 @@ class PythonFlowchartGV(ast.NodeVisitor):
         self.last_nodes = [node_id]
         return node_id
 
-    def visit_FunctionDef(self, node: ast.FunctionDef) -> None:
+    def visit_function_def(self, node: ast.FunctionDef) -> None:
         """Handle function definition."""
         name = node.name
         start_node = self.new_node(f"Function: {name}", shape="oval")
@@ -89,7 +89,7 @@ class PythonFlowchartGV(ast.NodeVisitor):
         for stmt in node.body:
             self.visit(stmt)
 
-    def visit_If(self, node: ast.If) -> None:
+    def visit_if(self, node: ast.If) -> None:
         """Handle `if` statements."""
         condition_label = f"If: {ast.unparse(node.test)}"
         decision_node = self.new_node(condition_label, shape="diamond")
@@ -131,13 +131,13 @@ class PythonFlowchartGV(ast.NodeVisitor):
         self.last_nodes = start_merge_nodes
         self.next_edge_label = None
 
-    def visit_For(self, node: ast.For) -> None:
+    def visit_for(self, node: ast.For) -> None:
         """Handle `for` loops."""
         return self._handle_loop(
             node, f"For: {ast.unparse(node.target)} in {ast.unparse(node.iter)}"
         )
 
-    def visit_While(self, node: ast.While) -> None:
+    def visit_while(self, node: ast.While) -> None:
         """Handle `while` loops."""
         return self._handle_loop(node, f"While: {ast.unparse(node.test)}")
 
@@ -173,7 +173,7 @@ class PythonFlowchartGV(ast.NodeVisitor):
         self.last_nodes = exit_nodes
         self.next_edge_label = None
 
-    def visit_Break(self, _node: ast.Break) -> None:
+    def visit_break(self, _node: ast.Break) -> None:
         """Handle `break` statement."""
 
         if self.loop_stack:
@@ -183,7 +183,7 @@ class PythonFlowchartGV(ast.NodeVisitor):
         else:
             self.new_node("break (orphaned)", shape="box", node_type="break")
 
-    def visit_Continue(self, _node: ast.Continue) -> None:
+    def visit_continue(self, _node: ast.Continue) -> None:
         """Handle `continue` statement."""
         if self.loop_stack:
             cont_node = self.new_node("continue", shape="box", node_type="continue")
@@ -192,31 +192,31 @@ class PythonFlowchartGV(ast.NodeVisitor):
         else:
             self.new_node("continue (orphaned)", shape="box", node_type="continue")
 
-    def visit_Return(self, node: ast.Return) -> None:
+    def visit_return(self, node: ast.Return) -> None:
         """Handle `return` statement."""
         val = ast.unparse(node.value) if node.value else "None"
         self.new_node(f"Return: {val}", shape="box")
         self.last_nodes = []
 
-    def visit_Expr(self, node: ast.Expr) -> None:
+    def visit_expr(self, node: ast.Expr) -> None:
         """Handle expression statements."""
         if isinstance(node.value, ast.Constant) and isinstance(node.value.value, str):
             return
         self.new_node(ast.unparse(node).strip(), shape="box")
 
-    def visit_Assign(self, node: ast.Assign) -> None:
+    def visit_assign(self, node: ast.Assign) -> None:
         """Handle variable assignment."""
         self.new_node(ast.unparse(node).strip(), shape="box")
 
-    def visit_AugAssign(self, node: ast.AugAssign) -> None:
+    def visit_aug_assign(self, node: ast.AugAssign) -> None:
         """Handle augmented assignment."""
         self.new_node(ast.unparse(node).strip(), shape="box")
 
-    def visit_AnnAssign(self, node: ast.AnnAssign) -> None:
+    def visit_ann_assign(self, node: ast.AnnAssign) -> None:
         """Handle annotated assignment."""
         self.new_node(ast.unparse(node).strip(), shape="box")
 
-    def visit_Try(self, node: ast.Try) -> None:
+    def visit_try(self, node: ast.Try) -> None:
         """
         Handle try...except...finally blocks.
 
@@ -269,7 +269,7 @@ class PythonFlowchartGV(ast.NodeVisitor):
 
         self.next_edge_label = None
 
-    def visit_Raise(self, node: ast.Raise) -> None:
+    def visit_raise(self, node: ast.Raise) -> None:
         """Handle `raise` statement."""
         if node.exc:
             val = ast.unparse(node.exc)
@@ -278,7 +278,7 @@ class PythonFlowchartGV(ast.NodeVisitor):
             self.new_node("Raise", shape="box")
         self.last_nodes = []
 
-    def visit_Pass(self, node: ast.Pass) -> None:
+    def visit_pass(self, node: ast.Pass) -> None:
         """Handle `pass`."""
         pass
 
