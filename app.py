@@ -19,20 +19,20 @@ from serpent.resources import EXAMPLES, THEMES
 
 assets_dir = Path(__file__).parent / "assets"
 try:
-    logo = Image.open(assets_dir / "serpent_logo_transparent.png")
-    icon = (
+    LOGO = Image.open(assets_dir / "serpent_logo_transparent.png")
+    ICON = (
         Image.open(assets_dir / "serpent_logo_compact.png")
         if (assets_dir / "serpent_logo_compact.png").exists()
-        else logo
+        else LOGO
     )
 except (FileNotFoundError, OSError):
-    logo = None
-    icon = None
+    LOGO = None
+    ICON = None
 
 # Page Configuration
 st.set_page_config(
     page_title="SERPENT",
-    page_icon=icon or "🐍",
+    page_icon=ICON or "🐍",
     layout="wide",
     initial_sidebar_state="expanded",
 )
@@ -56,8 +56,8 @@ def main() -> None:
     """Main application entry point."""
 
     with st.sidebar:
-        if logo:
-            st.image(logo, width="stretch")
+        if LOGO:
+            st.image(LOGO, width="stretch")
         else:
             st.title("SERPENT 🐍")
 
