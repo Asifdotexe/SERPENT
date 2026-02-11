@@ -3,3 +3,4 @@ __pycache__/
 .idea/
 SERPENT.egg-info/
 build/
+.pytest_cache/
