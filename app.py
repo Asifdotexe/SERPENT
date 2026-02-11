@@ -129,6 +129,10 @@ def _render_input_area(selected_example: str) -> tuple[str, str]:
     if "code_input" not in st.session_state:
         st.session_state.code_input = default_code
 
+    def _sync_code_input():
+        """Sync widget state to session state code_input."""
+        st.session_state.code_input = st.session_state.code_area_widget
+
     # We handle updates via callback now, so we remove the imperative check
     code = st.text_area(
         "Python Code",
@@ -136,11 +140,8 @@ def _render_input_area(selected_example: str) -> tuple[str, str]:
         height=400,
         label_visibility="collapsed",
         key="code_area_widget",
+        on_change=_sync_code_input,
     )
-
-    # Sync widget back to session state for manual edits
-    if code != st.session_state.code_input:
-        st.session_state.code_input = code
 
     chart_title = st.text_input("Chart Title", placeholder="Enter a title (optional)")
     return code, chart_title
