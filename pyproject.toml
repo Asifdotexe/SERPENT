@@ -32,6 +32,7 @@ disable = [
     "unnecessary-pass",
     "fixme",
     "too-few-public-methods",
+    "broad-exception-caught",
 ]
 
 [tool.pylint.design]

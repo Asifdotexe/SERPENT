@@ -75,6 +75,17 @@ class PythonFlowchartGV(ast.NodeVisitor):
         self.last_nodes = [node_id]
         return node_id
 
+    def visit(self, node: ast.AST) -> Any:
+        """Override visit to dispatch to snake_case methods."""
+        name = node.__class__.__name__
+        snake_name = "".join(
+            ["_" + c.lower() if c.isupper() else c for c in name]
+        ).lstrip("_")
+
+        method_name = "visit_" + snake_name
+        visitor = getattr(self, method_name, self.generic_visit)
+        return visitor(node)
+
     def visit_function_def(self, node: ast.FunctionDef) -> None:
         """Handle function definition."""
         name = node.name

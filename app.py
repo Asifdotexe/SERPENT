@@ -5,8 +5,8 @@ Launch the Streamlit web application for converting Python functions into flowch
 import ast
 import logging
 import re
+from typing import Any
 import shutil
-import textwrap
 from pathlib import Path
 
 import streamlit as st
@@ -52,9 +52,8 @@ st.markdown(
 )
 
 
-def main() -> None:
-    """Main application entry point."""
-
+def _render_sidebar() -> tuple[str, str, str]:
+    """Render the sidebar and return settings."""
     with st.sidebar:
         if LOGO:
             st.image(LOGO, width="stretch")
@@ -113,129 +112,150 @@ def main() -> None:
                 name="Asifdotexe/SERPENT",
                 url="https://github.com/Asifdotexe/SERPENT",
             )
+    return selected_example, rankdir, theme_name
 
-    col_header, col_btn = st.columns([3, 1])
+
+def _render_input_area(selected_example: str) -> tuple[str, str]:
+    """Render the code input area."""
+    st.subheader("📝 Input Code")
+
+    if selected_example != "(Custom)":
+        default_code = EXAMPLES[selected_example]
+    else:
+        # Keep previous input if possible, else empty
+        default_code = "def my_func():\n    pass"
+
+    # Initial state
+    if "code_input" not in st.session_state:
+        st.session_state.code_input = default_code
+
+    # We handle updates via callback now, so we remove the imperative check
+    code = st.text_area(
+        "Python Code",
+        value=st.session_state.code_input,
+        height=400,
+        label_visibility="collapsed",
+        key="code_area_widget",
+    )
+
+    # Sync widget back to session state for manual edits
+    if code != st.session_state.code_input:
+        st.session_state.code_input = code
+
+    chart_title = st.text_input("Chart Title", placeholder="Enter a title (optional)")
+    return code, chart_title
+
+
+def _render_output_area(
+    code: str, chart_title: str, rankdir: str, theme_name: str
+) -> None:
+    """Render the flowchart output area."""
+    valid_graph = None
+    st.subheader("🖼️ Flowchart")
+
+    with stylable_container(
+        key="output_container",
+        css_styles="""
+        {
+            border: 1px solid rgba(49, 51, 63, 0.2);
+            border-radius: 0.5rem;
+            padding: 1rem;
+            min-height: 480px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-color: rgba(255, 255, 255, 0.05);
+        }
+        """,
+    ):
+        if not code.strip():
+            st.info("Waiting for code input...")
+        else:
+            try:
+                # Validate
+                ast.parse(code)
+
+                # Generate
+                final_title = chart_title or "Flowchart"
+                selected_theme = THEMES[theme_name]
+
+                graph = generate_graphviz_flowchart(
+                    code,
+                    title=final_title,
+                    rankdir=rankdir,
+                    style_config=selected_theme,
+                )
+
+                st.graphviz_chart(graph, width="stretch")
+
+                # Store for download buttons below
+                valid_graph = graph
+
+            except SyntaxError as e:
+                st.error(f"Syntax Error: {e}")
+                valid_graph = None
+            except Exception as e:
+                st.error(f"An error occurred: {e}")
+                logging.exception("Graph generation failed")
+                valid_graph = None
+    return valid_graph
+
+
+def _render_download_buttons(valid_graph: Any, chart_title: str) -> None:
+    """Render download buttons if graph is valid."""
+    if not valid_graph:
+        return
+
+    st.divider()
+    d_col1, d_col2 = st.columns([1, 1])
+
+    # Sanitize filename
+    safe_title = re.sub(
+        r"[^a-z0-9_\-]", "", (chart_title or "flowchart").lower().replace(" ", "_")
+    )
+
+    with d_col1:
+        if shutil.which("dot"):
+            try:
+                png_bytes = valid_graph.pipe(format="png")
+                st.download_button(
+                    "📥 Download PNG",
+                    data=png_bytes,
+                    file_name=f"{safe_title}.png",
+                    mime="image/png",
+                    width="stretch",
+                )
+            except Exception:
+                st.warning("Could not generate PNG (Check Graphviz installation).")
+
+    with d_col2:
+        st.download_button(
+            "📄 Download DOT",
+            data=valid_graph.source,
+            file_name=f"{safe_title}.dot",
+            mime="text/vnd.graphviz",
+            width="stretch",
+        )
+
+
+def main() -> None:
+    """Main application entry point."""
+    selected_example, rankdir, theme_name = _render_sidebar()
+
+    col_header, _ = st.columns([3, 1])
     with col_header:
         st.title("Flowchart Generator")
 
     input_col, output_col = st.columns(2)
 
     with input_col:
-        st.subheader("📝 Input Code")
-
-        if selected_example != "(Custom)":
-            default_code = EXAMPLES[selected_example]
-        else:
-            # Keep previous input if possible, else empty
-            default_code = "def my_func():\n    pass"
-
-        # Initial state
-        if "code_input" not in st.session_state:
-            st.session_state.code_input = default_code
-
-        # We handle updates via callback now, so we remove the imperative check
-        code = st.text_area(
-            "Python Code",
-            value=st.session_state.code_input,
-            height=400,
-            label_visibility="collapsed",
-            key="code_area_widget",
-        )
-
-        # Sync widget back to session state for manual edits
-        if code != st.session_state.code_input:
-            st.session_state.code_input = code
-            if selected_example != "(Custom)":
-                # If user edits an example, switch dropdownto Custom
-                # (This requires rerun, effectively)
-                pass
-
-        chart_title = st.text_input(
-            "Chart Title", placeholder="Enter a title (optional)"
-        )
+        code, chart_title = _render_input_area(selected_example)
 
     with output_col:
-        st.subheader("🖼️ Flowchart")
-
-        with stylable_container(
-            key="output_container",
-            css_styles="""
-            {
-                border: 1px solid rgba(49, 51, 63, 0.2);
-                border-radius: 0.5rem;
-                padding: 1rem;
-                min-height: 480px;
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                background-color: rgba(255, 255, 255, 0.05);
-            }
-            """,
-        ):
-            valid_graph = None
-            if not code.strip():
-                st.info("Waiting for code input...")
-            else:
-                try:
-                    # Validate
-                    ast.parse(code)
-
-                    # Generate
-                    final_title = chart_title or "Flowchart"
-                    selected_theme = THEMES[theme_name]
-
-                    graph = generate_graphviz_flowchart(
-                        code,
-                        title=final_title,
-                        rankdir=rankdir,
-                        style_config=selected_theme,
-                    )
-
-                    st.graphviz_chart(graph, width="stretch")
-
-                    # Store for download buttons below
-                    valid_graph = graph
-
-                except SyntaxError as e:
-                    st.error(f"Syntax Error: {e}")
-                    valid_graph = None
-                except Exception as e:
-                    st.error(f"An error occurred: {e}")
-                    logging.exception("Graph generation failed")
-                    valid_graph = None
+        valid_graph = _render_output_area(code, chart_title, rankdir, theme_name)
 
     # Download Area (Full width below columns)
-    if "valid_graph" in locals() and valid_graph:
-        st.divider()
-        d_col1, d_col2 = st.columns([1, 1])
-
-        # Sanitize filename
-        safe_title = re.sub(
-            r"[^a-z0-9_\-]", "", (chart_title or "flowchart").lower().replace(" ", "_")
-        )
-
-        with d_col1:
-            if shutil.which("dot"):
-                try:
-                    png_bytes = valid_graph.pipe(format="png")
-                    st.download_button(
-                        "📥 Download PNG",
-                        data=png_bytes,
-                        file_name=f"{safe_title}.png",
-                        mime="image/png",
-                        width="stretch",
-                    )
-                except Exception:
-                    st.warning("Could not generate PNG (Check Graphviz installation).")
-
-        with d_col2:
-            st.download_button(
-                "📄 Download DOT",
-                data=valid_graph.source,
-                file_name=f"{safe_title}.dot",
-                mime="text/vnd.graphviz",
-                width="stretch",
-            )
+    _render_download_buttons(valid_graph, chart_title)
 
 
 if __name__ == "__main__":
