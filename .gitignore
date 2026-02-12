@@ -4,3 +4,4 @@ __pycache__/
 SERPENT.egg-info/
 build/
 .pytest_cache/
+.mypy_cache/
