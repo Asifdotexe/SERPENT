@@ -5,6 +5,7 @@
 ![Last Commit](https://img.shields.io/github/last-commit/Asifdotexe/SERPENT)
 ![Top Language](https://img.shields.io/github/languages/top/Asifdotexe/SERPENT)
 ![Languages Count](https://img.shields.io/github/languages/count/Asifdotexe/SERPENT)
+[![PyPI version](https://badge.fury.io/py/serpent-flowchart.svg)](https://badge.fury.io/py/serpent-flowchart)
 [![Deployed App](https://img.shields.io/badge/Deployed%20App-Live-green)](https://serpent.streamlit.app)
 
 ![SERPENT Banner](examples/serpent_banner_white_bg.png)
@@ -28,7 +29,9 @@
 
 ## Overview
 
-SERPENT is an offline Python flowchart generator. It reads any valid Python code, parses its Abstract Syntax Tree (AST), and converts it into a clear, standard flowchart diagram. This makes it easier to explain, review, and share Python code structure, especially for people who prefer visual formats over raw code. It is designed to work fully offline, without sending any data to online tools or services.
+SERPENT is an offline Python flowchart generator. It reads any valid Python code, parses its Abstract Syntax Tree (AST), and converts it into a clear, standard flowchart diagram.
+
+**Now available as a Python package!** You can use it in your Jupyter Notebooks to instantly visualize functions and code snippets.
 
 ---
 
@@ -68,60 +71,54 @@ def fix_bugs(bugs_remaining):
 **Generated Flowchart:**
 ![Flowchart for fixing bugs](examples/well-this-is-bugging-me.png)
 
-## Getting Started: Zero to Hero 🚀
-
-New to Python? No worries! Follow this step-by-step guide to get SERPENT running on your machine.
+## Getting Started
 
 ### 1. Install Prerequisites
 
-#### Install Python (3.10+)
-You need Python to run the code.
-- **Windows**: Download the installer from [python.org](https://www.python.org/downloads/).
-  - *Crucial Step*: Check the box **"Add Python to PATH"** before clicking Install.
-- **macOS**: Use Homebrew: `brew install python`
-- **Linux**: `sudo apt install python3 python3-pip`
-
-#### Install Poetry (Dependency Manager)
-Poetry handles all the library magic for us.
-- **Windows (PowerShell)**:
-  ```powershell
-  (Invoke-WebRequest -Uri https://install.python-poetry.org -UseBasicParsing).Content | python -
-  ```
-- **macOS / Linux**:
-  ```bash
-  curl -sSL https://install.python-poetry.org | python3 -
-  ```
-*After installing, close and reopen your terminal/command prompt.*
-
-#### Install Graphviz (The Drawing Engine)
-This tool allows Python to generate the actual images.
-- **Windows**:
-  - Download the installer from [graphviz.org](https://graphviz.org/download/).
-  - *Crucial Step*: select **"Add Graphviz to the system PATH for all users"** during installation.
+**System Dependency**: You must have `Graphviz` installed on your system.
+- **Windows**: [Download Installer](https://graphviz.org/download/) (Select "Add Graphviz to the system PATH" during installation)
 - **macOS**: `brew install graphviz`
 - **Linux**: `sudo apt install graphviz`
 
-### 2. Setup the Project
+### 2. Install the Package
 
-1.  **Clone the repository**:
-    ```bash
-    git clone https://github.com/Asifdotexe/SERPENT.git
-    cd SERPENT
-    ```
-
-2.  **Install Dependencies**:
-    Run this command in the project folder to install everything safely:
-    ```bash
-    poetry install
-    ```
-
-### 3. Run the App
-
-Launch the application with a single command:
+To use SERPENT in your Python scripts or Jupyter Notebooks:
 ```bash
-poetry run streamlit run serpent/app.py
+pip install serpent-flowchart
 ```
-*Note: The app runs locally in your browser at `http://localhost:8501`.*
+
+To run the Streamlit Web App locally:
+```bash
+pip install serpent-flowchart[app]
+```
+
+## Usage
+
+### In Jupyter Notebooks 📓
+
+Use the `serpentify` function to visualize your code instantly.
+
+```python
+from serpent import serpentify
+
+def is_positive(x):
+    if x > 0:
+        return "Yes"
+    else:
+        return "No"
+
+# Visualizes the function directly!
+serpentify(is_positive, title="Positive Check")
+```
+
+### Running the Web App 🌐
+
+If you installed with the `[app]` extra, you can launch the GUI:
+```bash
+streamlit run serpent/app.py
+# Note: You might need to clone the repo to run app.py directly if it's not exposed as a CLI entry point yet.
+```
+*Alternatively, clone the repo and use Poetry as described below for development.*
 
 ---
 
